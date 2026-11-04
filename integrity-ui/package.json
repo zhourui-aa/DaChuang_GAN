@@ -1,0 +1,28 @@
+{
+  "name": "integrity-ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "学鉴 · 课程作业 AI 内容检测（教师端）",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.5",
+    "echarts": "^5.5.1",
+    "element-plus": "^2.8.0",
+    "pinia": "^2.2.2",
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "sass": "^1.77.8",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

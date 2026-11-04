@@ -1,0 +1,158 @@
+/* ============================================================
+   学鉴 · Soft Light SaaS 设计令牌
+   参考：B端患者管理 SaaS 风格（浅灰底 + 白卡大圆角 + 柔投影 + 单点亮色）
+   ============================================================ */
+:root {
+  /* ---------- 品牌主色（蓝 #2E6BE6） ---------- */
+  --el-color-primary: #2e6be6;
+  --el-color-primary-light-3: #6b92ee;
+  --el-color-primary-light-5: #96b4f3;
+  --el-color-primary-light-7: #c1d2f8;
+  --el-color-primary-light-8: #d6e0fa;
+  --el-color-primary-light-9: #eaf0fd;
+  --el-color-primary-dark-2: #2556b8;
+
+  /* ---------- 中性色 ---------- */
+  --next-bg-main-color: #f2f3f5;
+  --next-color-white: #ffffff;
+  --next-bg-color: #f7f8fa;
+  --next-border-color-light: #eef0f4;
+  --next-color-primary-lighter: #eaf0fd;
+
+  --el-text-color-primary: #1b2559;
+  --el-text-color-regular: #4c5673;
+  --el-text-color-secondary: #8a94a6;
+  --el-text-color-placeholder: #a9b1c1;
+  --el-border-color: #e6e9f0;
+  --el-border-color-light: #eef0f4;
+  --el-border-color-lighter: #f2f4f8;
+
+  /* 自用别名 */
+  --ink: #1b2559;
+  --ink-2: #8a94a6;
+
+  /* ---------- 圆角 / 投影 / 间距 ---------- */
+  --r-card: 20px;
+  --r-block: 14px;
+  --r-pill: 999px;
+  --sh-soft: 0 4px 20px rgba(20, 30, 60, 0.06);
+  --sh-lift: 0 10px 30px rgba(20, 30, 60, 0.1);
+
+  /* ---------- 侧栏（改为浅色，对齐参考图） ---------- */
+  --next-bg-menuBar: #ffffff;
+  --next-bg-menuBarColor: #6b7280;
+  --next-bg-menuBarActiveColor: #eaf0fd;
+  --next-bg-menuBarTitle: #2e6be6;
+
+  /* ---------- 语义色（柔和版） ---------- */
+  --ok: #22c55e;
+  --ok-bg: #effaf3;
+  --warn: #f59e0b;
+  --warn-bg: #fdf6ec;
+  --danger: #f87171;
+  --danger-bg: #fdf2f2;
+  --info-bg: #f2f4f8;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  background: var(--next-bg-main-color);
+  font-family: Manrope, 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #d8dce5; border-radius: 3px; }
+::selection { background: var(--el-color-primary-light-8); }
+
+h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.02em; }
+
+/* ---------- 工具类 ---------- */
+.layout-pd { padding: 18px; }
+.layout-padding { padding: 18px; }
+.flex { display: flex; }
+.flex-auto { flex: 1; }
+.flex-margin { margin: auto; }
+.cursor-pointer { cursor: pointer; }
+.w100 { width: 100%; }
+.h100 { height: 100%; }
+.text-center { text-align: center; }
+.mt5 { margin-top: 5px; } .mt10 { margin-top: 10px; } .mt15 { margin-top: 15px; } .mt20 { margin-top: 20px; }
+.mb5 { margin-bottom: 5px; } .mb10 { margin-bottom: 10px; } .mb15 { margin-bottom: 15px; } .mb20 { margin-bottom: 20px; }
+.ml5 { margin-left: 5px; } .ml10 { margin-left: 10px; } .ml15 { margin-left: 15px; }
+.mr5 { margin-right: 5px; } .mr10 { margin-right: 10px; }
+.font12 { font-size: 12px; } .font13 { font-size: 13px; } .font16 { font-size: 16px; }
+.font20 { font-size: 20px; } .font30 { font-size: 30px; }
+.color-primary { color: var(--el-color-primary); }
+.color-info { color: var(--el-text-color-secondary); }
+.color-danger { color: var(--danger); }
+.color-warning { color: var(--warn); }
+.color-success { color: var(--ok); }
+
+/* ---------- 页面标题（大号加粗，对齐参考图） ---------- */
+.page-head { margin-bottom: 18px; }
+.page-head h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.page-head p { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); max-width: 70ch; line-height: 1.7; }
+
+/* ---------- Element Plus 覆盖：白卡大圆角 + 柔投影 ---------- */
+.el-card {
+  border: 0 !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--sh-soft) !important;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.el-card.is-hover-shadow:hover { box-shadow: var(--sh-lift) !important; }
+.el-card__header { border-bottom: 1px solid var(--next-border-color-light); padding: 16px 20px; background: transparent; }
+.el-card__body { padding: 20px; }
+
+/* 胶囊化：按钮 / 标签 / 搜索框 */
+.el-button { border-radius: var(--r-pill); font-weight: 600; }
+.el-button.is-round { border-radius: var(--r-pill); }
+.el-tag { border-radius: var(--r-pill) !important; border: 0; font-weight: 600; }
+.el-input__wrapper, .el-textarea__inner { border-radius: 12px; }
+.el-input__wrapper.is-focus, .el-textarea__inner:focus { box-shadow: 0 0 0 1px var(--el-color-primary) inset; }
+.el-radio-button__inner { border: 0 !important; }
+.el-radio-group { background: #eef0f4; border-radius: var(--r-pill); padding: 3px; }
+.el-radio-button__inner { background: transparent !important; border-radius: var(--r-pill) !important; box-shadow: none !important; font-weight: 600; color: var(--ink-2); }
+.el-radio-button.is-active .el-radio-button__inner { background: #fff !important; color: var(--el-color-primary) !important; box-shadow: 0 2px 8px rgba(20, 30, 60, 0.08) !important; }
+.el-select .el-input__wrapper { border-radius: 12px; }
+
+/* 表格：无边框、圆角行、淡色表头 */
+.el-table { --el-table-border-color: transparent; --el-table-header-bg-color: transparent; background: transparent; }
+.el-table th.el-table__cell { background: transparent; color: var(--ink-2); font-weight: 600; font-size: 12px; letter-spacing: 0.02em; border-bottom: 1px solid var(--next-border-color-light); }
+.el-table td.el-table__cell { border-bottom: 1px solid var(--next-border-color-light); }
+.el-table__row:hover > td.el-table__cell { background: #fafbfe !important; }
+.el-table::before, .el-table__inner-wrapper::before { display: none; }
+
+/* 进度条：圆头 + 浅轨 */
+.el-progress-bar__outer { background: #eef0f4 !important; border-radius: var(--r-pill); }
+.el-progress-bar__inner { border-radius: var(--r-pill); }
+
+/* 分页 / 对话框 / 抽屉 */
+.el-pagination.is-background .el-pager li { border-radius: 10px; }
+.el-pagination.is-background .el-pager li.is-active { background: var(--el-color-primary); }
+.el-dialog { border-radius: var(--r-card); }
+.el-dialog__header { padding: 20px 24px 12px; }
+.el-message { border-radius: var(--r-pill); }
+
+/* ---------- 浅色面板（卡片内嵌套小色块） ---------- */
+.panel-tint { background: #f7f8fa; border-radius: var(--r-block); padding: 16px; }
+.panel-tint.blue { background: var(--el-color-primary-light-9); }
+.panel-tint.green { background: var(--ok-bg); }
+.panel-tint.red { background: var(--danger-bg); }
+.panel-tint.amber { background: var(--warn-bg); }
+
+/* ---------- 证据高亮 ---------- */
+.ev-hl {
+  background: var(--danger-bg);
+  border-bottom: 1.5px dashed #f4b8b8;
+  padding: 2px 3px; border-radius: 6px; cursor: pointer; transition: all 0.18s ease;
+}
+.ev-hl.warn { background: var(--warn-bg); border-bottom-color: #f0cf9a; }
+.ev-hl:hover { filter: brightness(0.97); }
+.ev-hl.on { background: var(--danger); color: #fff; border-bottom-color: transparent; }
+.ev-hl.warn.on { background: var(--warn); color: #fff; }
+.raw-text { font-size: 14.5px; line-height: 2.1; white-space: pre-wrap; word-break: break-word; color: var(--el-text-color-regular); }

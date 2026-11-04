@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>学鉴 · 课程作业AI生成内容检测与学术诚信工具（教师端原型）</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>:root{--paper:#FAF8F3;--surface:#FFFFFF;--surface-2:#F5F2EB;--ink:#1B2130;--ink-2:#4C5567;--ink-3:#8A92A0;--line:#E6E1D8;--line-soft:#F1EEE7;--indigo:#23375C;--indigo-2:#33497A;--indigo-soft:#EAEEF6;--seal:#B23A2F;--seal-soft:#F8EBE8;--jade:#2E6B52;--jade-soft:#E8F1EC;--amber:#96701C;--amber-soft:#F8F0DD;--serif:'Noto Serif SC','Songti SC','Source Han Serif SC',Georgia,serif;--sans:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--sp:8px;--r-sm:3px;--r:6px;--r-lg:10px;--sh-1:0 1px 2px rgba(27,33,48,.04);--sh-2:0 2px 6px rgba(27,33,48,.06),0 1px 2px rgba(27,33,48,.04);--sh-3:0 10px 30px -12px rgba(27,33,48,.18);--ease:cubic-bezier(.2,.8,.2,1);--t:180ms}:root[data-theme="dark"]{--paper:#14171E;--surface:#1B1F28;--surface-2:#222732;--ink:#EAE7E0;--ink-2:#A9AFBC;--ink-3:#6E7480;--line:#2C322F;--line-soft:#232830;--indigo:#8FA8DE;--indigo-2:#A8BDEC;--indigo-soft:#1F2634;--seal:#E28073;--seal-soft:#2E2321;--jade:#7FBC9D;--jade-soft:#1E2A24;--amber:#D6AE6A;--amber-soft:#2A2519;--sh-3:0 10px 30px -12px rgba(0,0,0,.6)}*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased;text-wrap:pretty}button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}h1,h2,h3,h4{margin:0;font-family:var(--serif);font-weight:600;letter-spacing:-.01em}p{margin:0}::selection{background:var(--indigo-soft)}.app{display:flex;min-height:100vh}.sidebar{width:248px;flex:0 0 248px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{padding:22px 20px 18px;border-bottom:1px solid var(--line-soft)}.brand-row{display:flex;align-items:center;gap:10px}.mark{width:30px;height:30px;flex:0 0 30px;border-radius:var(--r-sm);background:var(--indigo);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:17px;font-weight:700;line-height:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}.brand-name{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:.04em}.brand-sub{margin-top:6px;font-size:11px;color:var(--ink-3);letter-spacing:.06em}.nav{padding:12px 12px;flex:1;display:flex;flex-direction:column;gap:2px}.nav-label{font-size:11px;color:var(--ink-3);letter-spacing:.12em;padding:12px 10px 6px;font-weight:500}.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);border:0;background:transparent;text-align:left;width:100%;color:var(--ink-2);transition:background var(--t) var(--ease),color var(--t) var(--ease)}.nav-item:hover{background:var(--surface-2);color:var(--ink)}.nav-item[aria-current="page"]{background:var(--indigo-soft);color:var(--indigo);font-weight:500}.nav-item svg{width:16px;height:16px;flex:0 0 16px;stroke-width:1.6}.nav-item .badge{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--seal-soft);color:var(--seal);padding:1px 6px;border-radius:20px}.sidebar-foot{padding:14px 20px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--ink-3);line-height:1.6}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--jade);margin-right:6px;vertical-align:middle}.dot.off{background:var(--ink-3)}.main{flex:1;min-width:0;display:flex;flex-direction:column}.topbar{height:60px;flex:0 0 60px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(10px);position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:0 28px}.crumb{font-size:12px;color:var(--ink-3);letter-spacing:.03em}.crumb b{color:var(--ink);font-weight:500;font-family:var(--sans)}.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}.who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2)}.avatar{width:26px;height:26px;border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:500;letter-spacing:.02em}.content{padding:28px;max-width:1180px;width:100%}.view{display:none;animation:rise .34s var(--ease)}.view.on{display:block}@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{margin-bottom:24px}.page-head h1{font-size:26px;line-height:1.3}.page-head p{margin-top:7px;color:var(--ink-2);font-size:13px;max-width:62ch}.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1)}.card-h{padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:12px}.card-h h3{font-size:15px}.card-h .sub{font-size:12px;color:var(--ink-3);margin-left:auto;font-family:var(--mono)}.card-b{padding:20px}.btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:500;transition:all var(--t) var(--ease)}.btn:hover{background:var(--surface-2);border-color:color-mix(in srgb,var(--line) 60%,var(--ink-3))}.btn:active{transform:translateY(.5px)}.btn.primary{background:var(--indigo);border-color:var(--indigo);color:#fff}.btn.primary:hover{background:var(--indigo-2);border-color:var(--indigo-2)}.btn.ghost{border-color:transparent;background:transparent;color:var(--ink-2)}.btn.ghost:hover{background:var(--surface-2);color:var(--ink)}.btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}.btn:disabled{opacity:.45;cursor:not-allowed}.btn svg{width:15px;height:15px;stroke-width:1.7}.tag{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.02em;white-space:nowrap}.tag.risk{background:var(--seal-soft);color:var(--seal)}.tag.warn{background:var(--amber-soft);color:var(--amber)}.tag.ok{background:var(--jade-soft);color:var(--jade)}.tag.info{background:var(--indigo-soft);color:var(--indigo)}.tag.mute{background:var(--surface-2);color:var(--ink-3)}.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1.55fr 1fr}@media(max-width:1080px){.g4{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}}.stat{padding:18px 20px}.stat .k{font-size:12px;color:var(--ink-3);letter-spacing:.02em;display:flex;align-items:center;gap:6px}.stat .v{font-family:var(--serif);font-size:32px;font-weight:700;line-height:1.1;margin-top:10px;letter-spacing:-.02em}.stat .v small{font-size:14px;font-weight:500;color:var(--ink-3);margin-left:3px;font-family:var(--sans)}.stat .d{margin-top:8px;font-size:12px;color:var(--ink-2)}.stat .d.up{color:var(--seal)}.stat .d.down{color:var(--jade)}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-weight:500;font-size:11px;color:var(--ink-3);letter-spacing:.08em;padding:0 14px 10px;border-bottom:1px solid var(--line)}td{padding:13px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle}tbody tr{transition:background var(--t) var(--ease);cursor:pointer}tbody tr:hover{background:var(--surface-2)}tbody tr:last-child td{border-bottom:0}td .t-title{font-weight:500;color:var(--ink)}td .t-sub{font-size:11px;color:var(--ink-3);margin-top:2px;font-family:var(--mono)}.meter{height:6px;border-radius:20px;background:var(--surface-2);overflow:hidden;min-width:70px}.meter i{display:block;height:100%;border-radius:20px;background:var(--indigo);transform-origin:left;animation:grow .8s var(--ease) both}@keyframes grow{from{transform:scaleX(0)}}.meter.hi i{background:var(--seal)}.meter.mid i{background:var(--amber)}.meter.lo i{background:var(--jade)}.drop{border:1.5px dashed var(--line);border-radius:var(--r-lg);background:var(--surface);padding:48px 24px;text-align:center;transition:all var(--t) var(--ease)}.drop:hover,.drop.hot{border-color:var(--indigo);background:var(--indigo-soft)}.drop .ic{width:44px;height:44px;margin:0 auto 14px;border-radius:var(--r);background:var(--indigo-soft);color:var(--indigo);display:grid;place-items:center}.drop .ic svg{width:20px;height:20px;stroke-width:1.6}.drop h3{font-size:16px;margin-bottom:6px}.drop p{font-size:12px;color:var(--ink-3)}.drop .fmt{margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.02em}.queue{display:flex;flex-direction:column;gap:1px;background:var(--line-soft);border-radius:var(--r);overflow:hidden}.q-row{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface)}.q-row .fi{width:30px;height:30px;flex:0 0 30px;border-radius:var(--r-sm);background:var(--surface-2);display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:var(--ink-3);letter-spacing:.04em}.q-row .nm{font-size:13px;font-weight:500}.q-row .mt{font-size:11px;color:var(--ink-3);font-family:var(--mono);margin-top:1px}.q-row .st{margin-left:auto;display:flex;align-items:center;gap:10px}.spin{width:13px;height:13px;border:1.6px solid var(--line);border-top-color:var(--indigo);border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.report-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;margin-bottom:16px;box-shadow:var(--sh-1);display:grid;grid-template-columns:1fr 260px;gap:28px}@media(max-width:900px){.report-hero{grid-template-columns:1fr}}.report-hero h1{font-size:23px;line-height:1.35}.meta-row{display:flex;flex-wrap:wrap;gap:0 26px;margin-top:14px;font-size:12px}.meta-row div{color:var(--ink-3)}.meta-row b{color:var(--ink);font-weight:500}.verdict{margin-top:20px;padding-top:18px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.verdict .lead{font-size:13px;color:var(--ink-2)}.score-box{text-align:center;border-left:1px solid var(--line-soft);padding-left:28px;display:flex;flex-direction:column;justify-content:center}@media(max-width:900px){.score-box{border-left:0;border-top:1px solid var(--line-soft);padding:20px 0 0}}.score-n{font-family:var(--serif);font-size:52px;font-weight:700;line-height:1;letter-spacing:-.03em}.score-n small{font-size:20px;font-weight:500;color:var(--ink-3)}.score-lbl{font-size:12px;color:var(--ink-3);margin-top:6px}.riskbar{position:relative;height:8px;border-radius:20px;margin:18px 0 6px;background:linear-gradient(90deg,var(--jade) 0%,var(--jade) 34%,var(--amber) 34%,var(--amber) 62%,var(--seal) 62%,var(--seal) 100%)}.riskbar .pin{position:absolute;top:-4px;width:3px;height:16px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2.5px var(--surface);transition:left .5s var(--ease)}.risk-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);font-family:var(--mono)}.dim{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line-soft)}.dim:last-child{border-bottom:0}.dim .dn{width:92px;flex:0 0 92px;font-size:13px;font-weight:500}.dim .dv{width:52px;flex:0 0 52px;text-align:right;font-family:var(--mono);font-size:14px;font-weight:500}.dim .dd{font-size:12px;color:var(--ink-3);margin-top:3px}.doc{font-family:var(--serif);font-size:15.5px;line-height:2.05;color:var(--ink);letter-spacing:.005em}.doc p{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--line-soft);transition:border-color var(--t) var(--ease)}.doc p:last-child{margin-bottom:0}.doc p.para-flag{border-left-color:var(--seal)}.doc p.para-warn{border-left-color:var(--amber)}.hl{background:var(--seal-soft);border-bottom:1.5px solid color-mix(in srgb,var(--seal) 55%,transparent);padding:1px 2px;border-radius:2px;cursor:pointer;transition:all var(--t) var(--ease);position:relative;color:inherit}.hl.warn{background:var(--amber-soft);border-bottom-color:color-mix(in srgb,var(--amber) 55%,transparent)}.hl:hover{background:color-mix(in srgb,var(--seal) 26%,transparent)}.hl.on{background:var(--seal);color:#fff;border-bottom-color:var(--seal)}.hl.warn.on{background:var(--amber);color:#fff}.para-meta{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding-left:16px;font-size:11px;font-family:var(--mono);color:var(--ink-3);letter-spacing:.02em}.para-meta .bar{width:56px;height:4px;border-radius:20px;background:var(--surface-2);overflow:hidden}.para-meta .bar i{display:block;height:100%;background:var(--ink-3);border-radius:20px}.ev-stack{position:sticky;top:84px;display:flex;flex-direction:column;gap:14px}.ev{padding:16px;border-radius:var(--r);background:var(--seal-soft);border:1px solid color-mix(in srgb,var(--seal) 24%,transparent);animation:rise .28s var(--ease)}.ev.warn{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 28%,transparent)}.ev-h{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--seal);margin-bottom:10px}.ev.warn .ev-h{color:var(--amber)}.ev-h svg{width:14px;height:14px;stroke-width:1.7}.ev-q{font-family:var(--serif);font-size:13.5px;line-height:1.85;color:var(--ink);padding-left:12px;border-left:2px solid currentColor;margin-bottom:12px}.ev-k{font-size:11px;color:var(--ink-3);letter-spacing:.08em;margin-bottom:4px}.ev-t{font-size:12.5px;color:var(--ink-2);line-height:1.75}.ev-foot{margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--ink-3)}.ev-empty{padding:28px 18px;text-align:center;color:var(--ink-3);font-size:12px;border:1px dashed var(--line);border-radius:var(--r);line-height:1.8}.tl{position:relative;padding-left:22px}.tl::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:var(--line)}.tl-i{position:relative;padding-bottom:18px}.tl-i:last-child{padding-bottom:0}.tl-i::before{content:'';position:absolute;left:-21px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}.tl-i.done::before{border-color:var(--jade);background:var(--jade)}.tl-i.now::before{border-color:var(--indigo);background:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}.tl-t{font-size:12.5px;font-weight:500}.tl-d{font-size:11px;color:var(--ink-3);margin-top:2px;font-family:var(--mono)}.scrim{position:fixed;inset:0;background:rgba(20,23,30,.42);backdrop-filter:blur(2px);display:none;place-items:center;z-index:60;padding:24px}.scrim.on{display:grid;animation:fade .2s var(--ease)}@keyframes fade{from{opacity:0}}.modal{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-3);width:min(560px,100%);max-height:88vh;overflow:auto;animation:rise .26s var(--ease)}.modal-h{padding:20px 24px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center}.modal-h h3{font-size:16px}.modal-b{padding:22px 24px}.modal-f{padding:16px 24px;border-top:1px solid var(--line-soft);display:flex;gap:10px;justify-content:flex-end}.field{margin-bottom:16px}.field label{display:block;font-size:12px;font-weight:500;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r);background:var(--paper);color:var(--ink);font-family:inherit;font-size:13px;transition:border-color var(--t) var(--ease),box-shadow var(--t) var(--ease)}.field textarea{resize:vertical;min-height:88px;line-height:1.7}.field input:focus,.field textarea:focus,.field select:focus{outline:0;border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}.field .hint{font-size:11px;color:var(--ink-3);margin-top:5px}.x{margin-left:auto;border:0;background:transparent;color:var(--ink-3);padding:4px;border-radius:var(--r-sm);line-height:0}.x:hover{background:var(--surface-2);color:var(--ink)}.x svg{width:16px;height:16px;stroke-width:1.7}.tw{position:fixed;right:20px;bottom:20px;z-index:70;font-family:var(--sans)}.tw-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--sh-2);display:grid;place-items:center;color:var(--ink-2);transition:all var(--t) var(--ease)}.tw-btn:hover{color:var(--indigo);border-color:var(--indigo);transform:rotate(38deg)}.tw-btn svg{width:19px;height:19px;stroke-width:1.6}.tw-panel{position:absolute;right:0;bottom:54px;width:272px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-3);padding:16px;display:none}.tw.open .tw-panel{display:block;animation:rise .24s var(--ease)}.tw-panel h4{font-size:12px;letter-spacing:.08em;color:var(--ink-3);font-weight:500;margin-bottom:14px;font-family:var(--sans)}.tw-row{margin-bottom:16px}.tw-row .k{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}.tw-row .k b{font-family:var(--mono);font-weight:500;color:var(--indigo)}input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:20px;background:var(--surface-2);outline:0}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--indigo);border:2.5px solid var(--surface);box-shadow:var(--sh-1);cursor:pointer}.seg{display:flex;gap:4px;background:var(--surface-2);padding:3px;border-radius:var(--r)}.seg button{flex:1;border:0;background:transparent;padding:6px;border-radius:var(--r-sm);font-size:12px;color:var(--ink-2);transition:all var(--t) var(--ease)}.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:500;box-shadow:var(--sh-1)}.note{margin-top:20px;padding:14px 16px;border-radius:var(--r);background:var(--surface-2);border-left:3px solid var(--indigo);font-size:12px;color:var(--ink-2);line-height:1.8}.note b{color:var(--ink)}.demo-flag{position:fixed;left:20px;bottom:20px;z-index:70;font-size:11px;font-family:var(--mono);color:var(--ink-3);background:var(--surface);border:1px solid var(--line);padding:6px 11px;border-radius:20px;box-shadow:var(--sh-1);letter-spacing:.03em}@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}@media(max-width:820px){.sidebar{display:none}.content{padding:20px 16px}.demo-flag{display:none}}</style></head><body><div class="app"><aside class="sidebar"><div class="brand"><div class="brand-row"><div class="mark">鉴</div><div class="brand-name">学鉴</div></div><div class="brand-sub">课程作业 AI 内容检测与学术诚信工具</div></div><nav class="nav"><div class="nav-label">教学管理</div><button class="nav-item" data-nav="overview" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>概览</button><button class="nav-item" data-nav="upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>作业检测</button><button class="nav-item" data-nav="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h4"/></svg>检测报告</button><div class="nav-label">诚信流程</div><button class="nav-item" data-nav="appeal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-3 6a3.5 3.5 0 0 0 6 0zM19 7l3 6a3.5 3.5 0 0 1-6 0z"/><path d="M8 21h8"/></svg>申诉复核<span class="badge">2</span></button><button class="nav-item" data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 14a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1.3z"/></svg>模型与阈值</button></nav><div class="sidebar-foot"><span class="dot" id="eng-dot"></span><span id="eng-txt">本地检测引擎 · 已就绪</span><br><span style="opacity:.75">数据不出校园 · v0.3 原型</span></div></aside><main class="main"><header class="topbar"><div class="crumb">教师端 / <b id="crumb">概览</b></div><div class="topbar-right"><button class="btn ghost" style="padding:0 10px" title="通知"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button><div class="who"><div class="avatar">李</div>李建国 · 智能制造学院</div></div></header><div class="content"><section class="view on" id="v-overview"><div class="page-head"><h1>作业诚信概览</h1><p>本学期《智能制造技术导论》《机械制图》两门课程的作业检测汇总。所有检测均在本校本地模型完成，作业原文不出校园。</p></div><div class="grid g4" style="margin-bottom:16px"><div class="card stat"><div class="k">本学期已检测作业</div><div class="v">1,284<small>份</small></div><div class="d">覆盖 2 门课程 · 4 个班级</div></div><div class="card stat"><div class="k">疑似 AI 生成</div><div class="v" style="color:var(--seal)">96<small>份</small></div><div class="d up">占比 7.5% · 较上月 +1.2%</div></div><div class="card stat"><div class="k">教师人工复核后确认</div><div class="v" style="color:var(--jade)">41<small>份</small></div><div class="d down">误判率 57.3%，均已驳回</div></div><div class="card stat"><div class="k">申诉工单</div><div class="v">2<small>件</small></div><div class="d">1 件复核中 · 1 件已结案</div></div></div><div class="grid g2"><div class="card"><div class="card-h"><h3>近期检测记录</h3><span class="sub">最近 6 条</span></div><div class="card-b" style="padding:8px 0 0"><table><thead><tr><th style="padding-left:20px">作业</th><th>AI 疑似度</th><th>判定</th><th style="text-align:right;padding-right:20px">检测时间</th></tr></thead><tbody id="recent-rows"></tbody></table></div></div><div class="card"><div class="card-h"><h3>AI 疑似度分布</h3><span class="sub">n=1284</span></div><div class="card-b" id="dist"></div></div></div><div class="note"><b>关于判定口径：</b>本工具不直接给出"是否作弊"的结论，只输出疑似度与可追溯的特征证据，供教师人工判断。以下所有数据为演示用示例数据。</div></section><section class="view" id="v-upload"><div class="page-head"><h1>作业检测</h1><p>支持批量上传课程作业，进入本地模型队列依次分析。上传后自动完成"困惑度 / 改写痕迹 / 行文轨迹"三维特征提取，生成可解释检测报告。</p></div><div class="drop" id="drop" style="margin-bottom:20px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg></div><h3>把作业文件拖到这里</h3><p>或 <span style="color:var(--indigo);text-decoration:underline;text-underline-offset:3px">从本机选择文件</span> · 单文件上限 20MB，支持批量</p><div class="fmt">.docx · .doc · .pdf · .txt</div></div><div class="card"><div class="card-h"><h3>检测队列</h3><span class="sub" id="q-sub">0 项</span></div><div class="card-b" id="queue-wrap"><div style="text-align:center;padding:34px 0;color:var(--ink-3);font-size:13px">队列为空 —— 上传文件后在此查看检测进度</div></div></div><div class="note"><b>队列说明：</b>本地模型顺序处理，不与外部服务通信。演示环境中点击上方区域或下方按钮即可模拟一次检测流程。<div style="margin-top:12px"><button class="btn" id="simulate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9z"/></svg>模拟上传一份作业</button></div></div></section><section class="view" id="v-report"><div class="page-head"><h1>检测报告</h1><p>报告由本地模型基于多特征分析生成。点击正文中带底色的语句，右侧会显示该处的判定依据与置信度。</p></div><div class="report-hero"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span class="tag info">期中作业</span><span class="tag mute">第 3 次检测</span></div><h1 id="rp-title"></h1><div class="meta-row" id="rp-meta"></div><div class="verdict"><span class="lead">综合判定：</span><span id="rp-verdict"></span><span style="font-size:12px;color:var(--ink-3);margin-left:auto" id="rp-threshold-note"></span></div></div><div class="score-box"><div class="score-n" id="rp-score">--<small>%</small></div><div class="score-lbl">AI 生成疑似度</div><div class="riskbar"><span class="pin" id="rp-pin" style="left:0%"></span></div><div class="risk-scale"><span>0 可信</span><span>60 存疑</span><span>100 高危</span></div></div></div><div class="grid g2"><div class="card"><div class="card-h"><h3>正文与证据定位</h3><span class="sub">逐段分析</span></div><div class="card-b"><div class="doc" id="rp-doc"></div></div></div><div class="ev-stack"><div class="card"><div class="card-h"><h3>特征维度</h3><span class="sub">3 项</span></div><div class="card-b" style="padding:6px 20px 12px" id="rp-dims"></div></div><div id="rp-evidence"></div><div class="card"><div class="card-h"><h3>处理意见</h3></div><div class="card-b"><p style="font-size:12.5px;color:var(--ink-2);line-height:1.8">该报告仅作为教学参考，<b>不构成作弊认定</b>。建议与提交学生进行一次写作过程问询（如复述核心论证、说明资料来源）后再作判断。</p><div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap"><button class="btn primary" id="btn-appeal-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>发起申诉复核</button><button class="btn" id="btn-clear">判为无误</button></div></div></div></div></div></section><section class="view" id="v-appeal"><div class="page-head"><h1>申诉复核</h1><p>学生可在收到检测结果后 5 个工作日内提交申诉。教师与学院教学督导共同复核，全程留痕。</p></div><div class="grid g2"><div class="card"><div class="card-h"><h3>申诉工单</h3><span class="sub">2 件</span></div><div class="card-b" style="padding:8px 0 0"><table><thead><tr><th style="padding-left:20px">学生 / 作业</th><th>申诉理由</th><th>状态</th></tr></thead><tbody id="appeal-rows"></tbody></table></div></div><div class="card"><div class="card-h"><h3>复核流程</h3><span class="sub">工单 #AP-2026-014</span></div><div class="card-b"><div class="tl"><div class="tl-i done"><div class="tl-t">系统出具检测报告</div><div class="tl-d">2026-10-09 22:14 · 疑似度 78%</div></div><div class="tl-i done"><div class="tl-t">学生提交申诉材料</div><div class="tl-d">2026-10-10 09:31 · 附写作草稿与参考文献</div></div><div class="tl-i now"><div class="tl-t">教师初步复核</div><div class="tl-d">进行中 · 已指派 李建国</div></div><div class="tl-i"><div class="tl-t">教学督导联合认定</div><div class="tl-d">待处理</div></div><div class="tl-i"><div class="tl-t">结果归档并通知学生</div><div class="tl-d">待处理</div></div></div></div></div></div><div class="note"><b>为什么必须有申诉环节：</b>AI 检测本身无法做到 100% 准确。工具只做"机器初筛"，最终认定权留给教师与督导，避免误判直接伤害学生。</div></section><section class="view" id="v-settings"><div class="page-head"><h1>模型与阈值</h1><p>判定阈值支持回看与调整，调整记录、生效时间、操作人全部留痕，便于学期末复盘检测口径。</p></div><div class="grid g2"><div class="card"><div class="card-h"><h3>当前生效配置</h3></div><div class="card-b"><div class="dim" style="padding-top:0"><div style="flex:1"><div class="dn" style="width:auto">本地检测模型</div><div class="dd">私有化部署，文本不外传</div></div><span class="tag ok">运行中</span></div><div class="dim"><div style="flex:1"><div class="dn" style="width:auto">特征维度</div><div class="dd">困惑度 · 改写痕迹 · 行文轨迹</div></div><span class="tag info">3 项启用</span></div><div class="dim"><div style="flex:1"><div class="dn" style="width:auto">存疑阈值</div><div class="dd">超过该值标记为需人工复核</div></div><span class="tag warn" id="cfg-warn">60%</span></div><div class="dim"><div style="flex:1"><div class="dn" style="width:auto">高危阈值</div><div class="dd">超过该值建议约谈学生</div></div><span class="tag risk" id="cfg-high">85%</span></div></div></div><div class="card"><div class="card-h"><h3>调整记录</h3><span class="sub">近 5 条</span></div><div class="card-b" style="padding:8px 0 0"><table><tbody><tr><td><div class="t-title">存疑阈值 65% → 60%</div><div class="t-sub">李建国 · 2026-09-28</div></td><td style="text-align:right"><span class="tag mute">已生效</span></td></tr><tr><td><div class="t-title">新增"行文轨迹"特征</div><div class="t-sub">系统 · 2026-09-15</div></td><td style="text-align:right"><span class="tag mute">已生效</span></td></tr><tr><td><div class="t-title">高危阈值 90% → 85%</div><div class="t-sub">教学督导组 · 2026-09-02</div></td><td style="text-align:right"><span class="tag mute">已生效</span></td></tr></tbody></table></div></div></div></section></div></main></div><div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-t"><div class="modal-h"><h3 id="modal-t">发起申诉复核</h3><button class="x" id="modal-x" aria-label="关闭"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="modal-b"><div class="field"><label>关联作业</label><input value="人工智能在智能制造中的应用与思考 · 张文博" readonly style="background:var(--surface-2);color:var(--ink-2)"></div><div class="field"><label>申诉理由</label><textarea placeholder="请说明写作过程、资料来源，可附草稿、参考文献、写作时间线等佐证材料…"></textarea><div class="hint">提交后由任课教师与教学督导共同复核，一般 3 个工作日内反馈。</div></div><div class="field"><label>佐证材料</label><button class="btn" style="width:100%;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>上传草稿 / 参考文献</button></div></div><div class="modal-f"><button class="btn" id="modal-cancel">取消</button><button class="btn primary" id="modal-submit">提交申诉</button></div></div></div><div class="tw" id="tw"><div class="tw-panel"><h4>TWEAKS</h4><div class="tw-row"><div class="k"><span>主题</span></div><div class="seg" id="seg-theme"><button data-theme="light" aria-pressed="true">浅色</button><button data-theme="dark" aria-pressed="false">深色</button></div></div><div class="tw-row"><div class="k"><span>存疑阈值</span><b id="tw-warn-v">60%</b></div><input type="range" id="tw-warn" min="40" max="90" value="60"></div><div class="tw-row"><div class="k"><span>高危阈值</span><b id="tw-high-v">85%</b></div><input type="range" id="tw-high" min="60" max="98" value="85"></div><div class="tw-row"><div class="k"><span>字号</span><b id="tw-fs-v">100%</b></div><input type="range" id="tw-fs" min="90" max="118" value="100"></div><div style="font-size:11px;color:var(--ink-3);line-height:1.7;border-top:1px solid var(--line-soft);padding-top:12px">拖动阈值滑块可实时观察报告中判定分档的变化 —— 这正是"阈值可回看调整"的演示。</div></div><button class="tw-btn" id="tw-btn" aria-label="Tweaks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.2 2.2M16.9 16.9l2.2 2.2M19.1 4.9l-2.2 2.2M7.1 16.9l-2.2 2.2"/></svg></button></div><div class="demo-flag">原型演示 · 示例数据 · 无后端</div><script>
+const REPORT = {
+title:'人工智能在智能制造中的应用与思考',
+course:'智能制造技术导论',
+student:'张文博 · 20230412',
+className:'智能制造 2301 班',
+submitted:'2026-10-09 22:14',
+score:0.78,
+dims:[
+{name:'文本困惑度', value:0.81, desc:'用词可预测性偏高，长句衔接缺少意外性'},
+{name:'改写痕迹', value:0.66, desc:'检出同义替换与句式重构，疑似经二次润色'},
+{name:'行文轨迹', value:0.74, desc:'段落推进过于平滑，缺少个人经验与试错痕迹'}
+],
+paras:[
+{score:0.18, text:'这学期上完《智能制造技术导论》，老师带我们去参观了江宁一家做汽车零部件的厂。说实话去之前我以为所谓智能工厂就是机器人多，去了才发现真正让我印象深的，是车间主任说的那句话——现在最贵的不是设备，是既懂工艺又会看数据的人。'},
+{score:0.92, text:'人工智能技术作为新一轮科技革命的核心驱动力，正在深刻重塑制造业的生产方式、组织形态与价值链条。从智能排产到质量预测，从设备健康管理到供应链协同，人工智能的应用场景不断拓展，为制造业转型升级注入了强劲动能。',
+hl:[
+{t:'作为新一轮科技革命的核心驱动力', type:'trace', c:0.88, r:'该表述是高预训练语料中的高频套语，在公开语料中出现的搭配高度固定，模型对其续写概率远高于普通学术写作。'},
+{t:'深刻重塑制造业的生产方式、组织形态与价值链条', type:'rewrite', c:0.91, r:'三元并列结构（A、B与C）在段落中密集出现且长度高度对称，是典型的生成式改写特征；人工写作中三者通常长短不一。'},
+{t:'注入了强劲动能', type:'ai', c:0.93, r:'动宾搭配为模板化表达，整段无任何具体案例、数据或来源，符合模型"安全综述式"输出习惯。'}
+]},
+{score:0.55, text:'在质量检测环节，基于机器视觉的缺陷识别已经比较成熟。厂里原来的质检线每条要三个人盯着，现在留一个人复核就行。不过也不是没有问题，光照一变模型就误判，他们后来专门搭了个暗室把光照固定下来才稳定。',
+hl:[
+{t:'基于机器视觉的缺陷识别已经比较成熟', type:'warn', c:0.62, r:'该句为通用行业概述，缺少出处；但紧随其后的具体厂房经验明显带有人工观察特征，故整体判为中等疑似。'}
+]},
+{score:0.87, text:'此外，人工智能还在预测性维护、能耗优化、柔性生产等多个维度展现出显著优势。通过构建数据驱动的闭环体系，企业能够实现降本增效、提质增能的战略目标，推动制造业向高端化、智能化、绿色化方向持续迈进。',
+hl:[
+{t:'展现出显著优势', type:'warn', c:0.74, r:'评价性动词+形容词的空泛组合，不含可核验信息。'},
+{t:'降本增效、提质增能', type:'rewrite', c:0.86, r:'四字口号式并列，两个短语语义高度重叠，人工写作中较少同时使用。'},
+{t:'高端化、智能化、绿色化方向持续迈进', type:'ai', c:0.9, r:'"三化"模板结尾在语料中极为常见，且与本段前文无逻辑承接。'}
+]},
+{score:0.30, text:'回到我自己，现在能做的可能就是先把 Python 和几门专业课学扎实。这次参观给我最大的触动，是发现课本上讲的"智能制造"，其实是一堆很具体的麻烦事堆起来的。'}
+]
+};
+const RECENT = [
+{t:'人工智能在智能制造中的应用与思考', s:'张文博 · 2301班', v:.78, at:'10-09 22:14'},
+{t:'基于PLC的自动分拣系统设计', s:'陈思远 · 2302班', v:.22, at:'10-09 20:41'},
+{t:'机械制图大作业 · 减速器装配图', s:'刘一鸣 · 2301班', v:.41, at:'10-09 18:06'},
+{t:'《智能制造导论》读书报告', s:'王雪 · 2303班', v:.93, at:'10-08 23:52'},
+{t:'数控加工工艺路线设计说明', s:'赵天宇 · 2302班', v:.35, at:'10-08 21:17'},
+{t:'工业机器人示教编程实验报告', s:'孙悦 · 2303班', v:.67, at:'10-08 19:44'}
+];
+const APPEALS = [
+{t:'张文博 · 人工智能在智能制造中的应用与思考', r:'附写作草稿与参考文献', st:'复核中', cls:'warn'},
+{t:'王雪 · 《智能制造导论》读书报告', r:'说明由AI辅助整理提纲', st:'已结案', cls:'ok'}
+];
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+let TH = { warn:60, high:85 };
+const pct = n => Math.round(n*100) + '%';
+function band(v){
+const p = v*100;
+if(p >= TH.high) return {label:'高危', cls:'risk',  text:'高度疑似 AI 生成', para:'para-flag'};
+if(p >= TH.warn) return {label:'存疑', cls:'warn',  text:'存在 AI 生成可能，建议人工复核', para:'para-warn'};
+return {label:'可信', cls:'ok', text:'未发现明显 AI 生成特征', para:''};
+}
+function meterCls(v){ const p=v*100; return p>=TH.high?'hi':p>=TH.warn?'mid':'lo'; }
+
+function renderOverview(){
+$('#recent-rows').innerHTML = RECENT.map((r,i)=>{
+const b = band(r.v);
+return `<tr data-goto-report>
+<td style="padding-left:20px"><div class="t-title">${r.t}</div><div class="t-sub">${r.s}</div></td>
+<td><div style="display:flex;align-items:center;gap:10px">
+<div class="meter ${meterCls(r.v)}"><i style="width:${r.v*100}%;animation-delay:${i*60}ms"></i></div>
+<span style="font-family:var(--mono);font-size:12px;width:34px">${pct(r.v)}</span></div></td>
+<td><span class="tag ${b.cls}">${b.label}</span></td>
+<td style="text-align:right;padding-right:20px;font-family:var(--mono);font-size:11px;color:var(--ink-3)">${r.at}</td>
+</tr>`;
+}).join('');
+const buckets = [
+{k:'0–40%', n:842, cls:'lo'}, {k:'40–60%', n:346, cls:'lo'},
+{k:'60–85%', n:68, cls:'mid'}, {k:'85–100%', n:28, cls:'hi'}
+];
+const max = 842;
+$('#dist').innerHTML = buckets.map(b=>`
+<div style="margin-bottom:16px">
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px">
+<span style="font-family:var(--mono);color:var(--ink-2)">${b.k}</span>
+<span style="font-family:var(--mono);color:var(--ink-3)">${b.n} 份</span>
+</div>
+<div class="meter ${b.cls}" style="height:9px"><i style="width:${b.n/max*100}%"></i></div>
+</div>`).join('') +
+`<div style="font-size:11.5px;color:var(--ink-3);line-height:1.8;border-top:1px solid var(--line-soft);padding-top:14px;margin-top:4px">
+分布呈明显长尾：绝大多数作业落在可信区间，高危样本占比约 2.2%。
+</div>`;
+}
+
+function renderReport(){
+const R = REPORT, b = band(R.score);
+$('#rp-title').textContent = R.title;
+$('#rp-meta').innerHTML = `
+<div>提交人 <b>${R.student}</b></div>
+<div>班级 <b>${R.className}</b></div>
+<div>课程 <b>${R.course}</b></div>
+<div>提交时间 <b>${R.submitted}</b></div>`;
+$('#rp-verdict').innerHTML = `<span class="tag ${b.cls}">${b.label}</span>
+<span style="font-size:13px;color:var(--ink-2)">${b.text}</span>`;
+$('#rp-threshold-note').textContent = `判定阈值：存疑 ${TH.warn}% · 高危 ${TH.high}%`;
+$('#rp-score').innerHTML = `${Math.round(R.score*100)}<small>%</small>`;
+$('#rp-pin').style.left = `calc(${R.score*100}% - 1.5px)`;
+$('#rp-dims').innerHTML = R.dims.map(d=>`
+<div class="dim">
+<div style="flex:1"><div class="dn" style="width:auto">${d.name}</div><div class="dd">${d.desc}</div></div>
+<div style="flex:1;max-width:130px"><div class="meter ${meterCls(d.value)}"><i style="width:${d.value*100}%"></i></div></div>
+<div class="dv" style="color:var(--${meterCls(d.value)==='hi'?'seal':meterCls(d.value)==='mid'?'amber':'jade'})">${pct(d.value)}</div>
+</div>`).join('');
+$('#rp-doc').innerHTML = R.paras.map((p,pi)=>{
+let html = p.text;
+if(p.hl){
+p.hl.forEach((h,hi)=>{
+const cls = h.type==='warn' ? 'hl warn' : 'hl';
+html = html.replace(h.t,
+`<span class="${cls}" data-p="${pi}" data-h="${hi}" tabindex="0" role="button">${h.t}</span>`);
+});
+}
+const pb = band(p.score);
+return `<div class="para-meta">第 ${pi+1} 段
+<span class="bar"><i style="width:${p.score*100}%"></i></span>
+<span>${pct(p.score)}</span></div>
+<p class="${pb.para}">${html}</p>`;
+}).join('');
+renderEvidence(null);
+}
+function renderEvidence(hit){
+const box = $('#rp-evidence');
+if(!hit){
+box.innerHTML = `<div class="ev-empty">点击左侧正文中<span style="background:var(--seal-soft);padding:1px 5px;border-radius:2px;color:var(--seal)">彩色底色</span>的语句<br>查看该处的判定依据</div>`;
+return;
+}
+const w = hit.type==='warn';
+const typeName = {ai:'疑似生成', rewrite:'改写痕迹', trace:'行文轨迹', warn:'轻度存疑'}[hit.type] || '特征命中';
+box.innerHTML = `
+<div class="ev ${w?'warn':''}">
+<div class="ev-h">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+${typeName}
+</div>
+<div class="ev-q">${hit.t}</div>
+<div class="ev-k">判定依据</div>
+<div class="ev-t">${hit.r}</div>
+<div class="ev-foot"><span>置信度</span><span>${pct(hit.c)} · 本地模型</span></div>
+</div>`;
+}
+
+function renderAppeals(){
+$('#appeal-rows').innerHTML = APPEALS.map(a=>`
+<tr><td style="padding-left:20px"><div class="t-title">${a.t}</div><div class="t-sub">${a.r}</div></td>
+<td><span style="font-size:12px;color:var(--ink-2)">${a.r}</span></td>
+<td><span class="tag ${a.cls}">${a.st}</span></td></tr>`).join('');
+}
+
+const CRUMB = {overview:'概览', upload:'作业检测', report:'检测报告', appeal:'申诉复核', settings:'模型与阈值'};
+function go(name){
+$$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+name));
+$$('.nav-item').forEach(n=>n.setAttribute('aria-current', n.dataset.nav===name?'page':'false'));
+$('#crumb').textContent = CRUMB[name] || '';
+window.scrollTo({top:0, behavior:'smooth'});
+}
+$$('.nav-item').forEach(n=>n.addEventListener('click',()=>go(n.dataset.nav)));
+document.addEventListener('click', e=>{
+if(e.target.closest('[data-goto-report]')) go('report');
+});
+
+$('#rp-doc').addEventListener('click', e=>{
+const s = e.target.closest('.hl'); if(!s) return;
+$$('.hl').forEach(x=>x.classList.remove('on'));
+s.classList.add('on');
+const p = REPORT.paras[+s.dataset.p], h = p.hl[+s.dataset.h];
+renderEvidence({...h, paraScore:p.score});
+});
+$('#rp-doc').addEventListener('keydown', e=>{
+if(e.key==='Enter'||e.key===' '){ const s=e.target.closest('.hl'); if(s){ e.preventDefault(); s.click(); } }
+});
+
+const FILES = [
+['期中作业.docx','张文博 · 2301班'],
+['读书报告.docx','王雪 · 2303班'],
+['实验报告.docx','孙悦 · 2303班']
+];
+let qn = 0;
+$('#simulate').addEventListener('click', simulate);
+$('#drop').addEventListener('click', simulate);
+function simulate(){
+const [name, who] = FILES[qn++ % FILES.length];
+const wrap = $('#queue-wrap');
+if(!wrap.querySelector('.queue')){
+wrap.innerHTML = '<div class="queue"></div>';
+}
+const id = 'q'+qn;
+const row = document.createElement('div');
+row.className = 'q-row'; row.id = id;
+row.innerHTML = `
+<div class="fi">DOCX</div>
+<div><div class="nm">${name}</div><div class="mt">${who}</div></div>
+<div class="st"><span class="spin"></span><span style="font-size:12px;color:var(--ink-3)">分析中…</span></div>`;
+wrap.querySelector('.queue').prepend(row);
+$('#eng-dot').classList.add('off'); $('#eng-txt').textContent = '本地检测引擎 · 分析中';
+let step = 0;
+const steps = ['提取文本…','困惑度分析…','改写痕迹比对…','行文轨迹分析…'];
+const iv = setInterval(()=>{
+row.querySelector('.st').innerHTML =
+`<span class="spin"></span><span style="font-size:12px;color:var(--ink-3)">${steps[step++]||'生成报告…'}</span>`;
+if(step > steps.length){
+clearInterval(iv);
+row.querySelector('.st').innerHTML =
+`<span class="tag warn">存疑 78%</span>
+<button class="btn" style="height:28px;padding:0 10px;font-size:12px">查看报告</button>`;
+row.querySelector('.btn').addEventListener('click', ev=>{ ev.stopPropagation(); go('report'); });
+$('#eng-dot').classList.remove('off'); $('#eng-txt').textContent = '本地检测引擎 · 已就绪';
+$('#q-sub').textContent = wrap.querySelectorAll('.q-row').length + ' 项';
+}
+}, 620);
+$('#q-sub').textContent = wrap.querySelectorAll('.q-row').length + ' 项';
+}
+
+const scrim = $('#scrim');
+const openModal = ()=> scrim.classList.add('on');
+const closeModal = ()=> scrim.classList.remove('on');
+$('#btn-appeal-open').addEventListener('click', openModal);
+$('#btn-clear').addEventListener('click', e=>{
+const b = e.currentTarget; b.textContent='已记录 ✓'; b.disabled=true;
+});
+$('#modal-x').addEventListener('click', closeModal);
+$('#modal-cancel').addEventListener('click', closeModal);
+$('#modal-submit').addEventListener('click', ()=>{ closeModal(); go('appeal'); });
+scrim.addEventListener('click', e=>{ if(e.target===scrim) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+$('#tw-btn').addEventListener('click', ()=> $('#tw').classList.toggle('open'));
+$$('#seg-theme button').forEach(b=>b.addEventListener('click',()=>{
+$$('#seg-theme button').forEach(x=>x.setAttribute('aria-pressed','false'));
+b.setAttribute('aria-pressed','true');
+document.documentElement.dataset.theme = b.dataset.theme;
+}));
+function syncThresholds(){
+const w = +$('#tw-warn').value, h = +$('#tw-high').value;
+if(w >= h){ // 保证存疑阈值始终低于高危阈值
+$('#tw-high').value = Math.min(98, w + 5);
+}
+TH.warn = +$('#tw-warn').value;
+TH.high = +$('#tw-high').value;
+$('#tw-warn-v').textContent = TH.warn + '%';
+$('#tw-high-v').textContent = TH.high + '%';
+$('#cfg-warn').textContent = TH.warn + '%';
+$('#cfg-high').textContent = TH.high + '%';
+renderOverview(); renderReport();
+}
+$('#tw-warn').addEventListener('input', syncThresholds);
+$('#tw-high').addEventListener('input', syncThresholds);
+$('#tw-fs').addEventListener('input', e=>{
+document.body.style.fontSize = e.target.value/100*14 + 'px';
+$('#tw-fs-v').textContent = e.target.value + '%';
+});
+
+renderOverview();
+renderReport();
+renderAppeals();</script></body></html>

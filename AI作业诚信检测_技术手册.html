@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课程作业 AI 生成内容检测与学术诚信工具 · 技术手册</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #fafafa; color: #1a1a1a; line-height: 1.72; font-size: 14px; padding: 32px 24px; }
+  .wrap { max-width: 1040px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 40px 48px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  h1 { font-size: 23px; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 18px; font-weight: 600; margin: 36px 0 16px; padding-left: 10px; border-left: 3px solid #534AB7; scroll-margin-top: 16px; }
+  h3 { font-size: 15px; font-weight: 600; margin: 24px 0 12px; color: #333; }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #444; }
+  p { margin-bottom: 12px; color: #333; }
+  .lead { background: #f4f5fb; border-left: 3px solid #534AB7; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 16px 0 24px; color: #2d2f5f; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; background: #fff; }
+  th { background: #eef0fa; color: #534AB7; font-weight: 600; text-align: left; padding: 9px 12px; border: 1px solid #d3d5f5; font-size: 12px; }
+  td { padding: 9px 12px; border: 1px solid #e8e8e8; vertical-align: top; color: #333; }
+  tr:nth-child(even) td { background: #fafafa; }
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin-bottom: 6px; color: #333; }
+  code { background: #f5f5f5; color: #b45309; padding: 1px 5px; border-radius: 3px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+  pre { background: #1e1e2e; color: #e0e0e8; padding: 14px 18px; border-radius: 8px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.72; overflow-x: auto; margin: 12px 0 16px; }
+  pre .c { color: #6b7280; } pre .k { color: #c792ea; } pre .s { color: #c3e88d; } pre .n { color: #f78c6c; } pre .t { color: #82aaff; }
+  .toc { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 16px 24px; margin: 16px 0 8px; }
+  .toc-title { font-weight: 600; margin-bottom: 8px; font-size: 13px; }
+  .toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 24px; }
+  .toc li { margin-bottom: 4px; font-size: 12px; color: #534AB7; break-inside: avoid; }
+  .toc li a { color: #534AB7; text-decoration: none; }
+  .toc li a:hover { text-decoration: underline; }
+  .arch { margin: 20px 0 28px; }
+  .layer { border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .layer-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .nodes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .node { flex: 1; min-width: 120px; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; text-align: center; }
+  .node-name { font-size: 12px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px; }
+  .node-desc { font-size: 11px; color: #888; }
+  .layer-1 { background: #f0f5ff; border: 1px solid #adc6ff; }
+  .layer-2 { background: #eef0fa; border: 1px solid #d3d5f5; }
+  .layer-3 { background: #e6fffb; border: 1px solid #87e8de; }
+  .layer-4 { background: #f6ffed; border: 1px solid #b7eb8f; }
+  .layer-5 { background: #fff7e6; border: 1px solid #ffd591; }
+  .arrow-down { text-align: center; color: #999; font-size: 18px; margin: 2px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>课程作业 AI 生成内容检测与学术诚信工具 · 技术手册</h1>
+
+<div class="lead">
+本手册管「<b>代码怎么写</b>」，只讲架构与工程实现骨架，不含落地排期 / 团队分工 / 赛事对位（见配套手册）。面向团队（数据与样本 / Java 业务微服务 / 检测编排 / AI 检测 / 前端证据可视化 / 申诉流程岗）。核心技术主线：<b>多特征可解释检测（困惑度 + 改写痕迹 + 行文轨迹）+ 私有化本地模型 + 证据可溯源 + 机审—申诉—复核闭环 + 检测效果自动回归评测</b>。系统只输出特征证据与置信度，输出人工复核建议，<b>不输出"作弊"定性结论</b>；作业文本在本地模型内完成分析，不外传。
+</div>
+
+<div class="toc">
+  <div class="toc-title">目 录</div>
+  <ol>
+    <li><a href="#s0">0 手册定位与使用说明</a></li>
+    <li><a href="#s1">1 环境与版本基线</a></li>
+    <li><a href="#s2">2 Monorepo 工程骨架</a></li>
+    <li><a href="#s3">3 核心数据模型（MySQL DDL）与检测特征 DSL</a></li>
+    <li><a href="#s4">4 后端服务落地（7 微服务）</a></li>
+    <li><a href="#s5">5 中间件落地（RocketMQ + Redis + ES + MinIO）</a></li>
+    <li><a href="#s6">6 AI 运行时落地（LangGraph 检测 graph + MCP Server）</a></li>
+    <li><a href="#s7">7 两栈对接（Java ↔ Python 协议契约）</a></li>
+    <li><a href="#s8">8 容器化运维落地</a></li>
+    <li><a href="#s9">9 前端落地（教师工作台 + 证据可视化 + 申诉流程）</a></li>
+    <li><a href="#s10">10 联调与验收（make verify）</a></li>
+    <li><a href="#s11">11 卡点排障</a></li>
+  </ol>
+</div>
+
+<h2 id="s0">0　手册定位与使用说明</h2>
+<ul>
+<li><b>面向</b>：团队全体（数据与样本采集岗 / Java 业务微服务岗 / 检测编排岗 / AI 检测岗 / 前端证据可视化岗 / 申诉流程岗 / 队长兼 PM）。</li>
+<li><b>给什么</b>：每章给关键骨架（建表 DDL / 接口签名 / 检测特征 DSL / LangGraph graph / MCP 工具契约 / RocketMQ Topic / ES mapping / 检测评测口径 / yaml）。完整 CRUD 复用课程实训模板（计算机轨「智学云」单体后台模板 + 「医枢云」微服务工程模板），不重复造轮子。</li>
+<li><b>怎么用</b>：立项期冻结数据模型 v1（§3）与检测特征定义 DSL v1（§3.4）；按章节顺序开发，前端与后端并行，检测算法与评测回归在中后段接入。</li>
+<li><b>配套</b>：《落地执行手册》管排期 / 分工 / 赛事对位 / 答辩。</li>
+<li><b>技术合规基线（贯穿全册，不可让步）</b>：
+  <ul>
+  <li><b>本地化</b>：检测全程在私有化本地模型（Ollama / vLLM）内完成，作业原文不出校园网、不上传第三方接口。</li>
+  <li><b>只给证据不给定性</b>：输出为特征值 + 证据片段 + 置信度 + 复核建议，不输出「该生作弊 / 系 AI 生成」结论。</li>
+  <li><b>可溯源</b>：每条证据必须能定位回原文的字符区间（<code>detect_evidence.begin_pos / end_pos</code>），不可溯源的特征不写入报告。</li>
+  <li><b>最小必要 + 权限分级</b>：只采集作业文本与必要的课程/提交元数据，不采集与检测无关的数据；任课教师 / 教研室 / 学院 / 管理员四级权限；学生姓名学号在列表页脱敏。</li>
+  <li><b>申诉优先</b>：任何高关注结果自动开启申诉通道入口，教师端不得只展示检测结论而无申诉路径。</li>
+  <li><b>阈值可回看</b>：检测配置版本化存储（<code>detect_configs</code>），每次检测结果记录所用配置版本，支持按版本回放。</li>
+  </ul>
+</li>
+</ul>
+
+<h2 id="s1">1　环境与版本基线</h2>
+<table>
+<tr><th>类别</th><th>组件</th><th>版本</th><th>课程对位</th></tr>
+<tr><td>运行时</td><td>JDK</td><td>17 LTS</td><td>阶段三 Spring Boot 现代化开发</td></tr>
+<tr><td>构建</td><td>Maven</td><td>3.9</td><td>阶段二 Maven</td></tr>
+<tr><td>业务框架</td><td>Spring Boot</td><td>3.2</td><td>阶段三 Spring Boot 现代化开发</td></tr>
+<tr><td>微服务框架</td><td>Spring Cloud Alibaba</td><td>2023.0</td><td>阶段四 Spring Cloud Alibaba</td></tr>
+<tr><td>注册/配置</td><td>Nacos</td><td>2.3</td><td>阶段四 Nacos 注册与配置中心</td></tr>
+<tr><td>服务调用</td><td>OpenFeign + LoadBalancer</td><td>—</td><td>阶段四 服务间调用</td></tr>
+<tr><td>网关</td><td>Spring Cloud Gateway</td><td>—</td><td>阶段四 网关</td></tr>
+<tr><td>限流熔断</td><td>Sentinel</td><td>1.8</td><td>阶段四 Sentinel 流控降级</td></tr>
+<tr><td>分布式事务</td><td>Seata</td><td>2.0</td><td>阶段四 Seata 分布式事务</td></tr>
+<tr><td>ORM</td><td>MyBatis-Plus</td><td>3.5</td><td>阶段三 MyBatis-Plus</td></tr>
+<tr><td>安全</td><td>Spring Security + JWT</td><td>6.x</td><td>阶段三 Spring Security</td></tr>
+<tr><td>数据库</td><td>MySQL</td><td>8.0</td><td>阶段一 MySQL/JDBC + 阶段三 MySQL 进阶</td></tr>
+<tr><td>缓存</td><td>Redis</td><td>7.x</td><td>阶段四 缓存中间件</td></tr>
+<tr><td>消息中间件</td><td>RocketMQ</td><td>5.x</td><td>阶段四 消息中间件（经 Spring Cloud Stream Binder）</td></tr>
+<tr><td>搜索</td><td>Elasticsearch（含 IK 分词）</td><td>8.x</td><td>阶段四 搜索存储</td></tr>
+<tr><td>对象存储</td><td>MinIO</td><td>—</td><td>阶段四 对象存储</td></tr>
+<tr><td>反向代理</td><td>Nginx</td><td>1.24</td><td>阶段四 网关</td></tr>
+<tr><td>容器</td><td>Docker / K8s</td><td>24+ / 1.28</td><td>阶段四 容器化 + 阶段六 Kubernetes</td></tr>
+<tr><td>链路追踪</td><td>SkyWalking</td><td>9.x</td><td>阶段六 链路追踪</td></tr>
+<tr><td>任务调度</td><td>XXL-JOB</td><td>2.4</td><td>阶段六 分布式任务调度</td></tr>
+<tr><td>单测/评测</td><td>JUnit5 + Mockito</td><td>5.10</td><td>阶段六 JUnit5 + Mockito</td></tr>
+<tr><td>AI 编排</td><td>LangChain / LangGraph</td><td>0.2 / 0.2</td><td>阶段五 LangChain 组件化 + LangGraph 工作流</td></tr>
+<tr><td>AI 协议</td><td>MCP（Model Context Protocol）</td><td>—</td><td>阶段五 MCP 协议与 MCP Server</td></tr>
+<tr><td>RAG</td><td>BM25 混合 + Rerank + 忠实度</td><td>—</td><td>阶段五 RAG 与知识库工程 + 高级检索与 RAG 评测</td></tr>
+<tr><td>评测</td><td>Agent Eval + 可观测性</td><td>—</td><td>阶段五 Agent Eval 与可观测性</td></tr>
+<tr><td>护栏</td><td>Guardrails（输出约束）</td><td>—</td><td>阶段五 Agent 安全与 Guardrails</td></tr>
+<tr><td>本地模型</td><td>Ollama / vLLM（Qwen2.5-7B-Instruct 量化为起评模型）</td><td>—</td><td>阶段五 本地模型与私有化 Agent</td></tr>
+<tr><td>结构化输出</td><td>JSON Schema 约束解码（Pydantic / Outlines）</td><td>—</td><td>阶段五 结构化输出</td></tr>
+<tr><td>Python</td><td>Python</td><td>3.11</td><td>阶段五 面向 Agent 开发的 Python 速通</td></tr>
+<tr><td>中文分词/向量</td><td>jieba（统计特征）+ bge-small-zh（检索向量）</td><td>—</td><td>阶段五 RAG 与检索</td></tr>
+<tr><td>前端</td><td>Vue3 + Vite + Pinia + ECharts</td><td>3.4 / 5.x</td><td>阶段二 Vue3 + 数据可视化</td></tr>
+<tr><td>接口文档</td><td>Knife4j（Swagger 增强）</td><td>4.x</td><td>阶段三 接口文档</td></tr>
+<tr><td>导出</td><td>EasyExcel + OpenHTMLtoPDF</td><td>—</td><td>阶段三 EasyExcel</td></tr>
+</table>
+<p>模型基线说明：起评模型选 7B 级中文指令模型（消费级显卡 12–16GB 可量化为 4-bit 运行），用于困惑度计算与结构化特征分析；后续如需提升判定质量，可换 14B 级并保留同一 MCP 契约，Java 侧无感。</p>
+
+<h2 id="s2">2　Monorepo 工程骨架</h2>
+<p>采用 Maven 多模块 Monorepo，按服务拆包。Java 侧负责作业与提交管理、检测任务编排、证据与特征管理、报告生成、申诉工单、权限审计；Python 侧负责多特征检测与证据解释，两栈以 MCP 对接。复用计算机轨「医枢云」微服务工程模板风格 + 「智学云」后台管理端模板。</p>
+<pre><span class="t">ai-assignment-integrity/</span>
+├── pom.xml                          <span class="c"># 父 POM 统一版本管理</span>
+├── integrity-common/                <span class="c"># 共享：DTO / 常量 / 错误码 / 脱敏工具</span>
+├── integrity-gateway/               <span class="c"># Spring Cloud Gateway 网关（鉴权/限流/路由）</span>
+├── integrity-auth/                  <span class="c"># 权限分级 / 鉴权 / 脱敏过滤 / 审计日志</span>
+├── integrity-assignment/            <span class="c"># 课程与作业：课程、作业、班级、提交管理</span>
+│   └── src/main/java/.../submit/    <span class="c"># 上传 / 解析(docx/pdf/txt) / 去噪 / 字数校验</span>
+├── integrity-detect/                <span class="c"># 检测任务编排：任务派发 / 结果落库 / 配置版本</span>
+│   └── src/main/java/.../task/      <span class="c"># 任务状态机 / MCP 调用 / 降级兜底</span>
+├── integrity-evidence/              <span class="c"># 特征与证据管理：特征明细 / 证据片段 / 检索</span>
+│   └── src/main/java/.../evidence/  <span class="c"># ES 同步 / 相似案例检索 / 证据样例库</span>
+├── integrity-report/                <span class="c"># 检测报告：报告组装 / 导出 / 可视化数据</span>
+├── integrity-appeal/                <span class="c"># 申诉工单：提交 / 复核 / 归档 / 状态机</span>
+├── integrity-ai-detector/           <span class="c"># Python：LangGraph 多特征检测 + MCP Server</span>
+│   ├── graph/                       <span class="c"># State + 节点 + 边（检测主链）</span>
+│   ├── features/                    <span class="c"># 困惑度 / 改写痕迹 / 行文轨迹 / 突发度 / 词汇丰富度</span>
+│   ├── mcp_server/                  <span class="c"># MCP 工具：特征分析 / 证据解释 / 复核建议</span>
+│   ├── rag/                         <span class="c"># 案例库 + 校规条文检索</span>
+│   └── eval/                        <span class="c"># Agent Eval 评测集与忠实度回归</span>
+├── integrity-ui/                    <span class="c"># Vue3 前端（教师工作台 + 证据可视化 + 申诉流程）</span>
+└── deploy/                          <span class="c"># Dockerfile + docker-compose + Nginx + K8s</span></pre>
+<h4>四条架构决策（贯穿全册）</h4>
+<ol>
+<li><b>检测与业务解耦</b>：Java 业务侧只管「任务、结果、证据、工单、权限」，检测算法全部在 Python 侧。算法迭代不动业务表结构，业务扩容不动算法代码，两侧只靠 §7 的协议契约耦合。</li>
+<li><b>特征与证据分离存储</b>：特征值（数值/评分）进 MySQL 明细表，全文与证据片段进 Elasticsearch，原文文件进 MinIO。报告组装时按 <code>submission_id</code> 关联三方，避免大文本塞进业务库。</li>
+<li><b>检测可降级</b>：AI 检测服务超时/熔断时，降级为「纯统计特征模式」（困惑度近似值 + 突发度 + 词汇丰富度 + 结构规律性），仍能给出特征证据，只是不含大模型语义分析。</li>
+<li><b>结论可回归</b>：每次检测记录所用模型版本与配置版本；评测集（留出集）跑回归，防止调阈值/换模型后效果回退。</li>
+</ol>
+
+<div class="arch">
+  <div class="layer layer-1">
+    <div class="layer-title">客户端层</div>
+    <div class="nodes">
+      <div class="node"><div class="node-name">教师工作台</div><div class="node-desc">作业列表 / 检测状态 / 批量提交</div></div>
+      <div class="node"><div class="node-name">检测详情页</div><div class="node-desc">原文证据高亮 + 特征雷达</div></div>
+      <div class="node"><div class="node-name">申诉处理台</div><div class="node-desc">工单流转 / 复核记录</div></div>
+      <div class="node"><div class="node-name">课程统计看板</div><div class="node-desc">班级/课程分布 / 趋势</div></div>
+    </div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="layer layer-2">
+    <div class="layer-title">接入层</div>
+    <div class="nodes">
+      <div class="node"><div class="node-name">Gateway 网关</div><div class="node-desc">鉴权 / 限流 / 路由</div></div>
+      <div class="node"><div class="node-name">auth 权限分级</div><div class="node-desc">四级权限 / 脱敏 / 审计</div></div>
+    </div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="layer layer-3">
+    <div class="layer-title">业务层（Spring Cloud Alibaba）</div>
+    <div class="nodes">
+      <div class="node"><div class="node-name">assignment</div><div class="node-desc">课程/作业/提交</div></div>
+      <div class="node"><div class="node-name">detect 编排</div><div class="node-desc">任务状态机 / 降级</div></div>
+      <div class="node"><div class="node-name">evidence</div><div class="node-desc">特征/证据/检索</div></div>
+      <div class="node"><div class="node-name">report</div><div class="node-desc">报告组装/导出</div></div>
+      <div class="node"><div class="node-name">appeal</div><div class="node-desc">申诉工单状态机</div></div>
+    </div>
+  </div>
+  <div class="arrow-down">↓ ↔</div>
+  <div class="layer layer-4">
+    <div class="layer-title">AI 检测层（Python，可降级）</div>
+    <div class="nodes">
+      <div class="node"><div class="node-name">LangGraph 检测</div><div class="node-desc">多特征 → 证据 → 建议</div></div>
+      <div class="node"><div class="node-name">MCP Server</div><div class="node-desc">特征/解释/建议工具</div></div>
+      <div class="node"><div class="node-name">本地大模型</div><div class="node-desc">Ollama / vLLM 私有化</div></div>
+      <div class="node"><div class="node-name">案例 RAG</div><div class="node-desc">相似案例 + 校规条文</div></div>
+      <div class="node"><div class="node-name">Agent Eval</div><div class="node-desc">忠实度/一致性回归</div></div>
+    </div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="layer layer-5">
+    <div class="layer-title">数据层</div>
+    <div class="nodes">
+      <div class="node"><div class="node-name">MySQL</div><div class="node-desc">课程/作业/检测/证据/申诉</div></div>
+      <div class="node"><div class="node-name">Redis</div><div class="node-desc">任务状态 / 缓存 / 限流</div></div>
+      <div class="node"><div class="node-name">Elasticsearch</div><div class="node-desc">提交文本 / 特征 / 相似检索</div></div>
+      <div class="node"><div class="node-name">MinIO</div><div class="node-desc">作业原文 / 报告 / 证据样例</div></div>
+      <div class="node"><div class="node-name">RocketMQ</div><div class="node-desc">提交 / 检测完成 / 申诉事件</div></div>
+    </div>
+  </div>
+</div>
+<p>外部输入：教师上传的课程作业文本（docx / pdf / txt，经 assignment 服务解析为纯文本）；标注数据集（人写 / AI 生成各 1000 份）由数据与样本岗离线采集，写入 MinIO <code>dataset-samples</code> 并登记到 <code>datasets</code> 表。</p>
+
+<h2 id="s3">3　核心数据模型（MySQL DDL）与检测特征 DSL</h2>
+<p>立项冻结 v1，全队签字，后续只加不改。共 14 张表，分四组：课程与提交（业务源）、检测（配置/任务/特征/证据/结果）、申诉（工单/复核）、治理（数据集/审计）。数据分级：L1 提交标识（学号脱敏展示）；L2 作业正文与检测特征（任课教师可见）；L3 证据明细与申诉记录（教研室/学院可见）；L4 申诉复核详情（仅学院级）。所有访问经 auth 服务审计留痕。</p>
+
+<h4>3.1 课程与提交</h4>
+<pre><span class="k">CREATE TABLE</span> <span class="t">courses</span> (
+  <span class="t">course_id</span>       <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">course_code</span>     <span class="k">VARCHAR</span>(30) <span class="k">UNIQUE NOT NULL</span>,
+  <span class="t">course_name</span>     <span class="k">VARCHAR</span>(100),
+  <span class="t">college_id</span>      <span class="k">BIGINT NOT NULL</span>,               <span class="c">-- 开课学院</span>
+  <span class="t">teacher_id</span>      <span class="k">BIGINT NOT NULL</span>,               <span class="c">-- 任课教师</span>
+  <span class="t">term</span>            <span class="k">VARCHAR</span>(10),                    <span class="c">-- 2026-2027-1</span>
+  <span class="t">enabled</span>         <span class="k">TINYINT DEFAULT</span> 1
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">classes</span> (
+  <span class="t">class_id</span>        <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">class_name</span>      <span class="k">VARCHAR</span>(60),
+  <span class="t">college_id</span>      <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">major</span>           <span class="k">VARCHAR</span>(60),
+  <span class="t">grade</span>           <span class="k">SMALLINT</span>
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">students</span> (
+  <span class="t">student_id</span>      <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">student_no</span>      <span class="k">VARCHAR</span>(20) <span class="k">UNIQUE NOT NULL</span>,   <span class="c">-- 学号（列表页脱敏）</span>
+  <span class="t">name_mask</span>       <span class="k">VARCHAR</span>(40),                   <span class="c">-- 脱敏姓名（张*）</span>
+  <span class="t">class_id</span>        <span class="k">BIGINT</span>,
+  <span class="k">INDEX</span> <span class="t">idx_class</span>(<span class="t">class_id</span>)
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">assignments</span> (
+  <span class="t">assignment_id</span>   <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">course_id</span>       <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">title</span>           <span class="k">VARCHAR</span>(120),
+  <span class="t">require_words</span>   <span class="k">INT</span>,                            <span class="c">-- 要求字数（短文本检测门槛）</span>
+  <span class="t">allow_appeal</span>    <span class="k">TINYINT DEFAULT</span> 1,
+  <span class="t">deadline</span>        <span class="k">DATETIME</span>,
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">submissions</span> (
+  <span class="t">submission_id</span>   <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">assignment_id</span>   <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">student_id</span>      <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">file_key</span>        <span class="k">VARCHAR</span>(200),                   <span class="c">-- MinIO submission-files 对象键</span>
+  <span class="t">raw_text</span>        <span class="k">LONGTEXT</span>,                       <span class="c">-- 解析后纯文本（去噪、去格式）</span>
+  <span class="t">char_count</span>      <span class="k">INT</span>,                            <span class="c">-- 去噪后字符数</span>
+  <span class="t">text_sha256</span>     <span class="k">CHAR</span>(64),                       <span class="c">-- 文本指纹（重复检测 / 缓存去重）</span>
+  <span class="t">submit_status</span>   <span class="k">VARCHAR</span>(20) <span class="k">DEFAULT</span> <span class="s">'已提交'</span>,   <span class="c">-- 已提交/解析失败/待检测</span>
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>,
+  <span class="k">UNIQUE KEY</span> <span class="t">uk_assign_student</span>(<span class="t">assignment_id</span>, <span class="t">student_id</span>),
+  <span class="k">INDEX</span> <span class="t">idx_text_sha</span>(<span class="t">text_sha256</span>)
+);</pre>
+
+<h4>3.2 检测配置与任务</h4>
+<pre><span class="k">CREATE TABLE</span> <span class="t">detect_configs</span> (
+  <span class="t">config_id</span>       <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">version</span>         <span class="k">VARCHAR</span>(20) <span class="k">UNIQUE NOT NULL</span>,    <span class="c">-- v1 / v2（冻结后只加不改）</span>
+  <span class="t">feature_dsl</span>     <span class="k">JSON</span>,                           <span class="c">-- 见 3.4 检测特征 DSL</span>
+  <span class="t">risk_threshold</span>  <span class="k">JSON</span>,                           <span class="c">-- {"low":0.35,"mid":0.6,"high":0.8}</span>
+  <span class="t">model_version</span>   <span class="k">VARCHAR</span>(60),                    <span class="c">-- qwen2.5-7b-instruct-q4</span>
+  <span class="t">frozen</span>          <span class="k">TINYINT DEFAULT</span> 0,
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">detect_tasks</span> (
+  <span class="t">task_id</span>         <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">submission_id</span>   <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">config_id</span>       <span class="k">BIGINT NOT NULL</span>,               <span class="c">-- 本次检测所用配置版本（可回看）</span>
+  <span class="t">status</span>          <span class="k">VARCHAR</span>(20) <span class="k">DEFAULT</span> <span class="s">'待检测'</span>,   <span class="c">-- 待检测/检测中/已完成/已降级/失败</span>
+  <span class="t">degraded</span>        <span class="k">TINYINT DEFAULT</span> 0,              <span class="c">-- 是否走了纯统计特征降级</span>
+  <span class="t">cost_ms</span>         <span class="k">INT</span>,
+  <span class="t">retry_count</span>     <span class="k">TINYINT DEFAULT</span> 0,
+  <span class="t">error_msg</span>       <span class="k">VARCHAR</span>(300),
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>,
+  <span class="t">finished_at</span>     <span class="k">DATETIME</span>,
+  <span class="k">INDEX</span> <span class="t">idx_status</span>(<span class="t">status</span>)
+);</pre>
+
+<h4>3.3 特征、证据与结果</h4>
+<pre><span class="k">CREATE TABLE</span> <span class="t">detect_features</span> (
+  <span class="t">feature_id</span>      <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">task_id</span>         <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">feature_code</span>    <span class="k">VARCHAR</span>(40) <span class="k">NOT NULL</span>,           <span class="c">-- PERPLEXITY / PARAPHRASE_TRACE ...</span>
+  <span class="t">feature_value</span>   <span class="k">DECIMAL</span>(8,4),                   <span class="c">-- 原始指标值（如困惑度 12.83）</span>
+  <span class="t">feature_score</span>   <span class="k">DECIMAL</span>(5,4),                   <span class="c">-- 归一化风险分 0-1</span>
+  <span class="t">weight</span>          <span class="k">DECIMAL</span>(4,3),                   <span class="c">-- 本次生效权重（来自配置版本）</span>
+  <span class="t">feature_text</span>    <span class="k">VARCHAR</span>(300),                   <span class="c">-- 特征自然语言描述（可解释）</span>
+  <span class="t">source</span>          <span class="k">VARCHAR</span>(20),                    <span class="c">-- STATS（统计）/ LLM（模型语义）</span>
+  <span class="k">INDEX</span> <span class="t">idx_task</span>(<span class="t">task_id</span>)
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">detect_evidence</span> (
+  <span class="t">evidence_id</span>     <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">task_id</span>         <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">feature_code</span>    <span class="k">VARCHAR</span>(40),
+  <span class="t">begin_pos</span>       <span class="k">INT NOT NULL</span>,                   <span class="c">-- 证据片段在原文中的起始字符位</span>
+  <span class="t">end_pos</span>         <span class="k">INT NOT NULL</span>,                   <span class="c">-- 结束位（左闭右开）</span>
+  <span class="t">snippet</span>         <span class="k">VARCHAR</span>(500),                   <span class="c">-- 证据片段原文</span>
+  <span class="t">reason</span>          <span class="k">VARCHAR</span>(300),                   <span class="c">-- 何以成为证据（可解释）</span>
+  <span class="k">INDEX</span> <span class="t">idx_task_code</span>(<span class="t">task_id</span>, <span class="t">feature_code</span>)
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">detect_results</span> (
+  <span class="t">result_id</span>       <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">task_id</span>         <span class="k">BIGINT NOT NULL UNIQUE</span>,
+  <span class="t">submission_id</span>   <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">risk_score</span>      <span class="k">DECIMAL</span>(5,4),                   <span class="c">-- 综合分 0-1（加权和）</span>
+  <span class="t">risk_level</span>      <span class="k">VARCHAR</span>(20),                    <span class="c">-- 低关注/中关注/高关注</span>
+  <span class="t">confidence</span>      <span class="k">DECIMAL</span>(5,4),                   <span class="c">-- 置信度（证据充分性）</span>
+  <span class="t">summary</span>         <span class="k">TEXT</span>,                           <span class="c">-- 检测说明（含"仅供参考"声明）</span>
+  <span class="t">review_suggestion</span> <span class="k">VARCHAR</span>(300),                 <span class="c">-- 人工复核建议</span>
+  <span class="t">config_version</span>  <span class="k">VARCHAR</span>(20),                    <span class="c">-- 所用配置版本（回看用）</span>
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);</pre>
+
+<h4>3.4 检测特征定义 DSL（JSON 示例，v1 冻结）</h4>
+<p>主特征 3 类（困惑度 / 改写痕迹 / 行文轨迹）+ 辅证 3 类（句长突发度 / 词汇丰富度 / 结构规律性）。每类给 <code>code / method / direction / weight / score_map / tag_text_template</code>；权重之和为 1。方向 <code>inverse</code> 表示指标越低越可疑（如困惑度），<code>direct</code> 表示越高越可疑（如结构规律性）。</p>
+<pre><span class="c">// detect_configs.feature_dsl v1（节选 3 条主特征 + 3 条辅证）</span>
+{
+  <span class="s">"version"</span>: <span class="s">"v1"</span>,
+  <span class="s">"features"</span>: [
+    {
+      <span class="s">"code"</span>: <span class="s">"PERPLEXITY"</span>,
+      <span class="s">"name"</span>: <span class="s">"文本困惑度"</span>,
+      <span class="s">"method"</span>: <span class="s">"local_llm_logprob"</span>,          <span class="c">// 本地模型逐 token logprob 求平均负对数似然</span>
+      <span class="s">"direction"</span>: <span class="s">"inverse"</span>,
+      <span class="s">"weight"</span>: 0.25,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=8"</span>: 1.0, <span class="s">"8-15"</span>: 0.6, <span class="s">"15-30"</span>: 0.3, <span class="s">"&gt;30"</span>: 0.0 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"全文平均困惑度 {value}，低于人工撰写常见区间，句式可预测性偏高"</span>
+    },
+    {
+      <span class="s">"code"</span>: <span class="s">"PARAPHRASE_TRACE"</span>,
+      <span class="s">"name"</span>: <span class="s">"改写痕迹"</span>,
+      <span class="s">"method"</span>: <span class="s">"llm_semantic_scan"</span>,           <span class="c">// 模型定位"同义替换密集但信息增益低"的段落</span>
+      <span class="s">"direction"</span>: <span class="s">"direct"</span>,
+      <span class="s">"weight"</span>: 0.25,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=0.2"</span>: 0.0, <span class="s">"0.2-0.4"</span>: 0.3, <span class="s">"0.4-0.6"</span>: 0.6, <span class="s">"&gt;0.6"</span>: 1.0 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"检测到 {count} 处改写痕迹，表现为同义替换密集、句意重复度高"</span>
+    },
+    {
+      <span class="s">"code"</span>: <span class="s">"WRITING_TRAJECTORY"</span>,
+      <span class="s">"name"</span>: <span class="s">"行文轨迹"</span>,
+      <span class="s">"method"</span>: <span class="s">"llm_trajectory_analysis"</span>,      <span class="c">// 段落展开是否符合人工写作的"起伏—修正—回扣"轨迹</span>
+      <span class="s">"direction"</span>: <span class="s">"direct"</span>,
+      <span class="s">"weight"</span>: 0.20,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=0.2"</span>: 0.0, <span class="s">"0.2-0.5"</span>: 0.4, <span class="s">"&gt;0.5"</span>: 0.8 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"行文轨迹过于平直，缺少人工写作常见的修改与回扣痕迹"</span>
+    },
+    {
+      <span class="s">"code"</span>: <span class="s">"BURSTINESS"</span>,
+      <span class="s">"name"</span>: <span class="s">"句长突发度"</span>,
+      <span class="s">"method"</span>: <span class="s">"stats_sentence_length_variance"</span>,
+      <span class="s">"direction"</span>: <span class="s">"inverse"</span>,
+      <span class="s">"weight"</span>: 0.12,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=8"</span>: 0.8, <span class="s">"8-20"</span>: 0.4, <span class="s">"&gt;20"</span>: 0.0 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"句长方差 {value}，句子长度分布过于均匀"</span>
+    },
+    {
+      <span class="s">"code"</span>: <span class="s">"LEXICAL_DIVERSITY"</span>,
+      <span class="s">"name"</span>: <span class="s">"词汇丰富度"</span>,
+      <span class="s">"method"</span>: <span class="s">"stats_type_token_ratio"</span>,
+      <span class="s">"direction"</span>: <span class="s">"inverse"</span>,
+      <span class="s">"weight"</span>: 0.10,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=0.35"</span>: 0.7, <span class="s">"0.35-0.45"</span>: 0.3, <span class="s">"&gt;0.45"</span>: 0.0 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"实词类符形符比 {value}，用词丰富度偏低"</span>
+    },
+    {
+      <span class="s">"code"</span>: <span class="s">"STRUCT_PATTERN"</span>,
+      <span class="s">"name"</span>: <span class="s">"结构规律性"</span>,
+      <span class="s">"method"</span>: <span class="s">"stats_paragraph_template_ratio"</span>,   <span class="c">// 段落开头句式 / 标点分布的模板化比例</span>
+      <span class="s">"direction"</span>: <span class="s">"direct"</span>,
+      <span class="s">"weight"</span>: 0.08,
+      <span class="s">"score_map"</span>: { <span class="s">"&lt;=0.3"</span>: 0.0, <span class="s">"0.3-0.6"</span>: 0.4, <span class="s">"&gt;0.6"</span>: 0.8 },
+      <span class="s">"tag_text_template"</span>: <span class="s">"{value} 的段落呈模板化展开（开头句式高度一致）"</span>
+    }
+  ],
+  <span class="s">"aggregate"</span>: <span class="s">"weighted_sum"</span>,
+  <span class="s">"min_chars"</span>: 200,
+  <span class="s">"notes"</span>: <span class="s">"字符数 &lt; min_chars 时不计综合分，只出特征明细，直接标注'短文本证据不足'"</span>
+}</pre>
+<p>合成规则：<code>risk_score = Σ(feature_score × weight)</code>；<code>risk_level</code> 由 <code>detect_configs.risk_threshold</code> 分档（低/中/高关注）。<b>置信度</b>与分数分开计算：可用特征数 ≥5 且每条主特征都有证据片段 → 高；3–4 条 → 中；<2 条或字符数不足 → 低，并在 <code>summary</code> 中显式标注「证据不足，仅供教师复核参考，不建议据此发起处理」。</p>
+
+<h4>3.5 申诉工单与复核</h4>
+<pre><span class="k">CREATE TABLE</span> <span class="t">appeals</span> (
+  <span class="t">appeal_id</span>       <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">submission_id</span>   <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">student_id</span>      <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">trigger_task_id</span> <span class="k">BIGINT</span>,                         <span class="c">-- 触发申诉的检测任务</span>
+  <span class="t">statement</span>       <span class="k">TEXT</span>,                           <span class="c">-- 学生陈述（如"写作过程说明"）</span>
+  <span class="t">attach_keys</span>     <span class="k">JSON</span>,                           <span class="c">-- 佐证附件 MinIO 对象键数组（草稿、截图等）</span>
+  <span class="t">status</span>          <span class="k">VARCHAR</span>(20) <span class="k">DEFAULT</span> <span class="s">'待受理'</span>,   <span class="c">-- 待受理/复核中/已认定/已驳回/已归档</span>
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">appeal_reviews</span> (
+  <span class="t">review_id</span>       <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">appeal_id</span>       <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">reviewer_id</span>     <span class="k">BIGINT NOT NULL</span>,               <span class="c">-- 复核人（教研室/学院）</span>
+  <span class="t">review_conclusion</span> <span class="k">VARCHAR</span>(20),                 <span class="c">-- 认定为人工撰写/证据不足/维持关注</span>
+  <span class="t">review_note</span>     <span class="k">TEXT</span>,                           <span class="c">-- 复核说明（须写清依据哪条证据/如何排除）</span>
+  <span class="t">threshold_feedback</span> <span class="k">VARCHAR</span>(30),                <span class="c">-- 标记该案例为"阈值需调整"，驱动配置迭代</span>
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>,
+  <span class="k">INDEX</span> <span class="t">idx_appeal</span>(<span class="t">appeal_id</span>)
+);</pre>
+
+<h4>3.6 数据集与审计</h4>
+<pre><span class="k">CREATE TABLE</span> <span class="t">datasets</span> (
+  <span class="t">dataset_id</span>      <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">name</span>            <span class="k">VARCHAR</span>(80),                    <span class="c">-- 人工撰写1000 / AI生成1000 / 留出集200</span>
+  <span class="t">sample_type</span>     <span class="k">VARCHAR</span>(20),                    <span class="c">-- HUMAN / AI / HOLDOUT</span>,
+  <span class="t">sample_count</span>    <span class="k">INT</span>,
+  <span class="t">minio_prefix</span>    <span class="k">VARCHAR</span>(200),                   <span class="c">-- dataset-samples/ 下前缀</span>,
+  <span class="t">labeled</span>         <span class="k">TINYINT DEFAULT</span> 0,
+  <span class="t">consent_note</span>    <span class="k">VARCHAR</span>(200),                   <span class="c">-- 脱敏与使用授权说明</span>,
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="k">CREATE TABLE</span> <span class="t">audit_logs</span> (
+  <span class="t">log_id</span>          <span class="k">BIGINT PRIMARY KEY AUTO_INCREMENT</span>,
+  <span class="t">operator_id</span>     <span class="k">BIGINT NOT NULL</span>,
+  <span class="t">operator_role</span>   <span class="k">VARCHAR</span>(20),                    <span class="c">-- TEACHER/CHAIR/COLLEGE/ADMIN</span>,
+  <span class="t">action</span>          <span class="k">VARCHAR</span>(40),                    <span class="c">-- VIEW_DETECT/EXPORT_REPORT/REVIEW_APPEAL</span>,
+  <span class="t">target_submission</span> <span class="k">BIGINT</span>,
+  <span class="t">ip</span>              <span class="k">VARCHAR</span>(40),
+  <span class="t">created_at</span>      <span class="k">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);</pre>
+
+<h2 id="s4">4　后端服务落地（7 微服务）</h2>
+<p>按职责拆 6 个业务微服务 + 1 个网关。每服务注册到 Nacos，经 Gateway 统一路由，服务间走 OpenFeign + LoadBalancer，跨服务写操作走 Seata 分布式事务，限流降级走 Sentinel。完整 CRUD 复用「医枢云」实训模板。</p>
+
+<h4>4.1 服务职责一览</h4>
+<table>
+<tr><th>服务</th><th>端口</th><th>职责</th><th>核心表</th><th>Feign 调用</th></tr>
+<tr><td>integrity-gateway</td><td>8080</td><td>统一路由 / JWT 校验 / 限流 / 请求体大小限制（上传 20MB）</td><td>—</td><td>—</td></tr>
+<tr><td>integrity-auth</td><td>8001</td><td>四级权限分级 / 登录与 JWT 签发 / 脱敏过滤 / 审计日志写入</td><td>audit_logs</td><td>—</td></tr>
+<tr><td>integrity-assignment</td><td>8002</td><td>课程 / 作业 / 班级 / 提交管理；文件解析（docx/pdf/txt）→ 纯文本 → MinIO + 指纹</td><td>courses, classes, students, assignments, submissions</td><td>detect（提交后触发检测）</td></tr>
+<tr><td>integrity-detect</td><td>8003</td><td>检测任务编排 / 状态机 / 调 AI 检测（MCP）/ 降级兜底 / 配置版本绑定</td><td>detect_configs, detect_tasks, detect_results</td><td>evidence（写特征）、ai-detector（MCP）</td></tr>
+<tr><td>integrity-evidence</td><td>8004</td><td>特征明细与证据片段落库 / ES 同步 / 相似案例检索 / 证据样例库</td><td>detect_features, detect_evidence</td><td>—</td></tr>
+<tr><td>integrity-report</td><td>8005</td><td>检测报告组装（特征 + 证据 + 说明）/ 导出 PDF-Excel / 看板聚合数据</td><td>（读 detect_*、ES）</td><td>evidence、detect</td></tr>
+<tr><td>integrity-appeal</td><td>8006</td><td>申诉工单状态机 / 复核记录 / 阈值反馈回写</td><td>appeals, appeal_reviews</td><td>detect（读原检测）、report</td></tr>
+</table>
+
+<h4>4.2 核心接口签名（Java）</h4>
+<h4>integrity-assignment · 提交与解析</h4>
+<pre><span class="k">@RestController</span>
+<span class="k">@RequestMapping</span>(<span class="s">"/api/assignment"</span>)
+<span class="k">public class</span> <span class="t">SubmissionController</span> {
+
+    <span class="c">// 教师提交作业文件（docx/pdf/txt），解析为纯文本并落库</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/submit"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">SubmissionVO</span>&gt; <span class="t">submit</span>(<span class="k">@RequestPart</span> <span class="t">MultipartFile</span> file,
+                                     <span class="k">@RequestParam</span> <span class="t">Long</span> assignmentId,
+                                     <span class="k">@RequestParam</span> <span class="t">Long</span> studentId);
+
+    <span class="c">// 批量提交（整班一次上传：Zip 内多文件 / 多文件表单）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/submit-batch"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">BatchSubmitVO</span>&gt; <span class="t">submitBatch</span>(<span class="k">@RequestPart</span> <span class="t">MultipartFile</span>[] files,
+                                               <span class="k">@RequestParam</span> <span class="t">Long</span> assignmentId);
+
+    <span class="c">// 课程作业列表（教师工作台：含检测状态、关注等级、是否在申诉中）</span>
+    <span class="k">@GetMapping</span>(<span class="s">"/list"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">PageVO</span>&lt;<span class="t">SubmissionRowVO</span>&gt;&gt; <span class="t">list</span>(
+            <span class="k">@RequestParam</span> <span class="t">Long</span> assignmentId,
+            <span class="k">@RequestParam</span>(required = <span class="k">false</span>) <span class="t">String</span> riskLevel,
+            <span class="k">@RequestParam</span> <span class="k">int</span> page, <span class="k">@RequestParam</span> <span class="k">int</span> size);
+}</pre>
+
+<h4>integrity-detect · 检测任务编排</h4>
+<pre><span class="k">@RestController</span>
+<span class="k">@RequestMapping</span>(<span class="s">"/api/detect"</span>)
+<span class="k">public class</span> <span class="t">DetectController</span> {
+
+    <span class="c">// 单条检测（提交后自动触发 / 教师手动重检）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/run"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">DetectResultVO</span>&gt; <span class="t">run</span>(<span class="k">@RequestBody</span> <span class="t">DetectRequest</span> req);
+
+    <span class="c">// 整班批量检测（异步，XXL-JOB 分片执行，返回批次号）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/run-batch"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">String</span>&gt; <span class="t">runBatch</span>(<span class="k">@RequestParam</span> <span class="t">Long</span> assignmentId);
+
+    <span class="c">// 查询检测状态与结果摘要（工作台轮询）</span>
+    <span class="k">@GetMapping</span>(<span class="s">"/result/{submissionId}"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">DetectResultVO</span>&gt; <span class="t">result</span>(<span class="k">@PathVariable</span> <span class="t">Long</span> submissionId);
+
+    <span class="c">// 按配置版本回放检测（调阈值迭代后复算历史样本）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/replay"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">ReplayReportVO</span>&gt; <span class="t">replay</span>(<span class="k">@RequestParam</span> <span class="t">String</span> configVersion,
+                                          <span class="k">@RequestBody</span> <span class="t">ReplayScope</span> scope);
+}</pre>
+
+<h4>integrity-evidence · 特征与证据</h4>
+<pre><span class="k">@RestController</span>
+<span class="k">@RequestMapping</span>(<span class="s">"/api/evidence"</span>)
+<span class="k">public class</span> <span class="t">EvidenceController</span> {
+
+    <span class="c">// 检测详情页：特征明细 + 每条证据的原文区间（供前端高亮）</span>
+    <span class="k">@GetMapping</span>(<span class="s">"/{submissionId}"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">EvidenceVO</span>&gt; <span class="t">detail</span>(<span class="k">@PathVariable</span> <span class="t">Long</span> submissionId);
+
+    <span class="c">// 相似案例检索（ES more_like_this：检索历史证据样例库）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/similar"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">List</span>&lt;<span class="t">SimilarCaseVO</span>&gt;&gt; <span class="t">similar</span>(<span class="k">@RequestBody</span> <span class="t">SimilarQuery</span> query);
+}</pre>
+
+<h4>integrity-appeal · 申诉工单状态机</h4>
+<pre><span class="k">@RestController</span>
+<span class="k">@RequestMapping</span>(<span class="s">"/api/appeal"</span>)
+<span class="k">public class</span> <span class="t">AppealController</span> {
+
+    <span class="c">// 学生/教师发起申诉（高关注结果自动建草稿工单）</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/create"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">Long</span>&gt; <span class="t">create</span>(<span class="k">@RequestBody</span> <span class="t">AppealCreateDTO</span> dto);
+
+    <span class="c">// 复核（教研室/学院）：结论 + 说明 + 是否标记"阈值需调整"</span>
+    <span class="k">@PostMapping</span>(<span class="s">"/review"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">AppealReviewVO</span>&gt; <span class="t">review</span>(<span class="k">@RequestBody</span> <span class="t">AppealReviewDTO</span> dto);
+
+    <span class="c">// 工单列表（按状态 / 课程 / 时间筛选）</span>
+    <span class="k">@GetMapping</span>(<span class="s">"/list"</span>)
+    <span class="k">public</span> <span class="t">Result</span>&lt;<span class="t">PageVO</span>&lt;<span class="t">AppealRowVO</span>&gt;&gt; <span class="t">list</span>(<span class="k">@RequestParam</span> <span class="t">String</span> status,
+                                                       <span class="k">@RequestParam</span> <span class="k">int</span> page, <span class="k">@RequestParam</span> <span class="k">int</span> size);
+}</pre>
+
+<h4>4.3 网关路由与限流规则</h4>
+<pre><span class="c"># Nacos 中 gateway 路由配置</span>
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: assignment
+          uri: lb://integrity-assignment
+          predicates: [{ Path: /api/assignment/** }]
+        - id: detect
+          uri: lb://integrity-detect
+          predicates: [{ Path: /api/detect/** }]
+        - id: evidence
+          uri: lb://integrity-evidence
+          predicates: [{ Path: /api/evidence/** }]
+        - id: appeal
+          uri: lb://integrity-appeal
+          predicates: [{ Path: /api/appeal/** }]
+      default-filters:
+        - name: RequestRateLimiter
+          args: { redis-rate-limiter.replenishRate: 20, redis-rate-limiter.burstCapacity: 40 }</pre>
+<table>
+<tr><th>接口</th><th>限流策略</th><th>降级</th></tr>
+<tr><td>/api/assignment/submit-batch（整班上传）</td><td>1 QPS / 教师，单请求 ≤200 文件</td><td>直接拒绝并提示分批上传</td></tr>
+<tr><td>/api/detect/run（单条）</td><td>3 QPS / 教师</td><td>转异步队列，返回任务号</td></tr>
+<tr><td>/api/detect/run-batch（整班）</td><td>1 QPS / 课程</td><td>XXL-JOB 分片串行</td></tr>
+<tr><td>AI 检测（MCP 调用）</td><td>5 QPS + 熔断 50% 5s</td><td>降级为纯统计特征模式（degraded=1）</td></tr>
+<tr><td>/api/evidence/{id}（详情页）</td><td>教师 10 QPS</td><td>返回 Redis 缓存证据</td></tr>
+</table>
+
+<h4>4.4 分布式事务（Seata）</h4>
+<p>「检测完成 → 写特征与证据 → 生成报告」与「申诉认定 → 更新工单状态 → 回写阈值反馈」是跨服务写链路，走 Seata AT 模式，保证特征/证据/结果三者一致，不出现「报告出来了但证据表是空的」。</p>
+<pre><span class="k">@GlobalTransactional</span>
+<span class="k">public void</span> <span class="t">persistDetect</span>(<span class="t">Long</span> taskId, <span class="t">DetectPayload</span> payload) {
+    detectService.updateTaskStatus(taskId, <span class="s">"已完成"</span>);          <span class="c">// detect</span>
+    evidenceFeign.saveFeatures(taskId, payload.getFeatures());      <span class="c">// evidence：特征明细</span>
+    evidenceFeign.saveEvidence(taskId, payload.getEvidences());     <span class="c">// evidence：证据片段</span>
+    reportFeign.buildReport(payload.getSubmissionId());             <span class="c">// report：报告快照</span>
+}</pre>
+
+<h2 id="s5">5　中间件落地（RocketMQ + Redis + ES + MinIO）</h2>
+
+<h4>5.1 RocketMQ Topic 规范（经 Spring Cloud Stream Binder）</h4>
+<table>
+<tr><th>Topic</th><th>Tag</th><th>生产者</th><th>消费者</th><th>用途</th></tr>
+<tr><td>integrity-submit</td><td>SUBMITTED</td><td>assignment</td><td>detect</td><td>提交解析完成 → 触发检测任务</td></tr>
+<tr><td>integrity-detect</td><td>TASK_DONE</td><td>detect</td><td>report, evidence</td><td>检测完成 → 报告组装 + ES 同步</td></tr>
+<tr><td>integrity-detect</td><td>TASK_DEGRADED</td><td>detect</td><td>report</td><td>降级完成 → 报告中显式标注"仅统计特征"</td></tr>
+<tr><td>integrity-flag</td><td>HIGH_RISK</td><td>detect</td><td>appeal</td><td>高关注结果 → 自动建申诉工单草稿</td></tr>
+<tr><td>integrity-appeal</td><td>APPEAL_REVIEWED</td><td>appeal</td><td>detect, report</td><td>复核完成 → 若标记"阈值需调整"，入配置迭代候选池</td></tr>
+<tr><td>integrity-dead-letter</td><td>—</td><td>所有</td><td>—</td><td>消费失败 3 次进死信，XXL-JOB 扫描补偿</td></tr>
+</table>
+<pre><span class="c"># application.yml（detect 示例）</span>
+spring:
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: <span class="s">${ROCKETMQ_NAMESERVER:127.0.0.1:9876}</span>
+      bindings:
+        submitted-in-0:
+          destination: integrity-submit
+          group: detect-consumer
+        taskDone-out-0:
+          destination: integrity-detect
+          content-type: application/json</pre>
+
+<h4>5.2 Redis Key 规范</h4>
+<table>
+<tr><th>Key 模式</th><th>类型</th><th>TTL</th><th>用途</th></tr>
+<tr><td>detect:task:{taskId}:status</td><td>Hash</td><td>24h</td><td>任务状态与进度（工作台轮询）</td></tr>
+<tr><td>detect:result:{submissionId}</td><td>String(JSON)</td><td>1h</td><td>检测结果摘要缓存</td></tr>
+<tr><td>detect:evidence:{submissionId}</td><td>String(JSON)</td><td>6h</td><td>证据片段缓存（详情页直读）</td></tr>
+<tr><td>detect:model:health</td><td>String</td><td>30s</td><td>本地模型健康探针（决定是否降级）</td></tr>
+<tr><td>detect:dup:{textSha256}</td><td>String</td><td>7d</td><td>同一文本重复提交 → 复用结果不重算</td></tr>
+<tr><td>auth:session:{token}</td><td>String</td><td>30min</td><td>登录会话</td></tr>
+<tr><td>ratelimit:{api}:{userId}</td><td>String+Expire</td><td>动态</td><td>限流计数</td></tr>
+</table>
+
+<h4>5.3 Elasticsearch Mapping（提交文本 + 特征 + 相似检索）</h4>
+<pre><span class="c">// 索引 submission_detect</span>
+{
+  <span class="s">"mappings"</span>: {
+    <span class="s">"properties"</span>: {
+      <span class="s">"submission_id"</span>:   { <span class="s">"type"</span>: <span class="s">"long"</span> },
+      <span class="s">"course_id"</span>:       { <span class="s">"type"</span>: <span class="s">"long"</span> },
+      <span class="s">"assignment_id"</span>:   { <span class="s">"type"</span>: <span class="s">"long"</span> },
+      <span class="s">"student_no_mask"</span>: { <span class="s">"type"</span>: <span class="s">"keyword"</span> },
+      <span class="s">"content"</span>:         { <span class="s">"type"</span>: <span class="s">"text"</span>, <span class="s">"analyzer"</span>: <span class="s">"ik_max_word"</span> },
+      <span class="s">"char_count"</span>:      { <span class="s">"type"</span>: <span class="s">"integer"</span> },
+      <span class="s">"risk_score"</span>:      { <span class="s">"type"</span>: <span class="s">"double"</span> },
+      <span class="s">"risk_level"</span>:      { <span class="s">"type"</span>: <span class="s">"keyword"</span> },
+      <span class="s">"confidence"</span>:      { <span class="s">"type"</span>: <span class="s">"double"</span> },
+      <span class="s">"features"</span>: {
+        <span class="s">"type"</span>: <span class="s">"nested"</span>,
+        <span class="s">"properties"</span>: {
+          <span class="s">"feature_code"</span>:  { <span class="s">"type"</span>: <span class="s">"keyword"</span> },
+          <span class="s">"feature_score"</span>: { <span class="s">"type"</span>: <span class="s">"double"</span> },
+          <span class="s">"source"</span>:        { <span class="s">"type"</span>: <span class="s">"keyword"</span> }
+        }
+      },
+      <span class="s">"degraded"</span>:        { <span class="s">"type"</span>: <span class="s">"boolean"</span> },
+      <span class="s">"config_version"</span>:  { <span class="s">"type"</span>: <span class="s">"keyword"</span> },
+      <span class="s">"appeal_status"</span>:   { <span class="s">"type"</span>: <span class="s">"keyword"</span> },
+      <span class="s">"created_at"</span>:      { <span class="s">"type"</span>: <span class="s">"date"</span> }
+    }
+  }
+}</pre>
+<p>两类查询用法：① <b>聚合</b>（看板）——按 <code>course_id</code> / <code>assignment_id</code> 分组，统计各 <code>risk_level</code> 数量与平均分；② <b>相似检索</b>（证据样例）——用 <code>more_like_this</code> 以当前提交文本召回历史相似案例，供教师参考"同类写法此前的复核结论"，不参与评分。</p>
+
+<h4>5.4 MinIO Bucket</h4>
+<table>
+<tr><th>Bucket</th><th>用途</th><th>访问</th></tr>
+<tr><td>submission-files</td><td>作业原文文件（docx/pdf/txt）</td><td>仅任课教师 + 学院级；保留至学期末</td></tr>
+<tr><td>detect-reports</td><td>检测报告导出（PDF / Excel）</td><td>教师本人 + 教研室；TTL 30 天</td></tr>
+<tr><td>evidence-samples</td><td>可解释证据样例库（脱敏片段 + 复核结论）</td><td>内部只读，用于评估与答辩演示</td></tr>
+<tr><td>dataset-samples</td><td>标注数据集（人工撰写 / AI 生成 / 留出集）</td><td>仅数据与样本岗 + 队长；含脱敏与授权说明</td></tr>
+</table>
+
+<h2 id="s6">6　AI 运行时落地（LangGraph 检测 graph + MCP Server）</h2>
+<p>AI 层职责单一：<b>吃进一段作业文本，吐出「特征值 + 证据片段 + 置信度 + 复核建议」</b>。不做定性判定，不做成绩评定，不外传文本。整条链路跑在本地模型上（Ollama / vLLM），模型不可用时降级为纯统计特征模式。</p>
+
+<h4>6.1 LangGraph graph 定义（Python）</h4>
+<pre><span class="k">from</span> typing <span class="k">import</span> TypedDict, List
+<span class="k">from</span> langgraph.graph <span class="k">import</span> StateGraph, END
+
+<span class="k">class</span> <span class="t">DetectState</span>(TypedDict):
+    submission_id: <span class="t">int</span>
+    text: <span class="t">str</span>                      <span class="c"># 去噪后纯文本</span>
+    char_count: <span class="t">int</span>
+    chunks: <span class="t">List</span>[dict]             <span class="c"># 分句/分段结果（带字符区间）</span>
+    stats_features: <span class="t">List</span>[dict]       <span class="c"># 统计特征：困惑度近似 / 突发度 / 词汇丰富度 / 结构规律性</span>
+    llm_features: <span class="t">List</span>[dict]         <span class="c"># 模型语义特征：改写痕迹 / 行文轨迹</span>
+    evidences: <span class="t">List</span>[dict]           <span class="c"># 证据片段 [{feature_code, begin_pos, end_pos, snippet, reason}]</span>
+    features: <span class="t">List</span>[dict]            <span class="c"># 合并后的特征明细（含 score / weight / text）</span>
+    risk_score: <span class="t">float</span>
+    risk_level: <span class="t">str</span>
+    confidence: <span class="t">float</span>
+    summary: <span class="t">str</span>
+    suggestion: <span class="t">str</span>
+    case_refs: <span class="t">List</span>[dict]           <span class="c"># RAG 召回的历史相似案例 / 校规条文</span>
+    guardrail_passed: <span class="t">bool</span>
+
+<span class="k">def</span> <span class="t">preprocess</span>(state: DetectState) -> DetectState:
+    <span class="c"># 分句分段、去噪、字数校验；&lt; min_chars 直接标记证据不足</span>
+    state[<span class="s">"chunks"</span>] = split_sentences(state[<span class="s">"text"</span>])
+    state[<span class="s">"char_count"</span>] = len(state[<span class="s">"text"</span>])
+    <span class="k">return</span> state
+
+<span class="k">def</span> <span class="t">extract_stats</span>(state: DetectState) -> DetectState:
+    <span class="c"># 统计侧特征：句长突发度 / 类符形符比 / 段落模板化比例</span>
+    <span class="c"># 困惑度：本地模型逐 token logprob 求平均负对数似然（不产生文本输出）</span>
+    state[<span class="s">"stats_features"</span>] = stats_extractor.run(state[<span class="s">"text"</span>], state[<span class="s">"chunks"</span>])
+    <span class="k">return</span> state
+
+<span class="k">def</span> <span class="t">agent_analyze</span>(state: DetectState) -> DetectState:
+    <span class="c"># 语义侧特征：改写痕迹 + 行文轨迹，走本地大模型 + 结构化输出约束</span>
+    <span class="c"># 输出必须是 schema 约束的 JSON，禁止自由文本</span>
+    result = llm_agent.invoke(build_detect_prompt(state))   <span class="c"># 返回 {features:[...], evidences:[...]}</span>
+    state[<span class="s">"llm_features"</span>] = result[<span class="s">"features"</span>]
+    state[<span class="s">"evidences"</span>] = result[<span class="s">"evidences"</span>]
+    <span class="k">return</span> state
+
+<span class="k">def</span> <span class="t">retrieve_cases</span>(state: DetectState) -> DetectState:
+    <span class="c"># RAG：从案例库 + 校规条文召回"同类写法"的复核结论与条文依据</span>
+    state[<span class="s">"case_refs"</span>] = case_rag.search(state[<span class="s">"text"</span>], top_k=3)
+    <span class="k">return</span> state
+
+<span class="k">def</span> <span class="t">aggregate</span>(state: DetectState) -> DetectState:
+    <span class="c"># 按 feature_dsl 权重合成 risk_score / risk_level，并单独算 confidence</span>
+    state[<span class="s">"features"</span>] = merge(state[<span class="s">"stats_features"</span>], state[<span class="s">"llm_features"</span>])
+    state[<span class="s">"risk_score"</span>] = weighted_sum(state[<span class="s">"features"</span>])
+    state[<span class="s">"risk_level"</span>] = to_level(state[<span class="s">"risk_score"</span>], cfg.risk_threshold)
+    state[<span class="s">"confidence"</span>] = compute_confidence(state)
+    <span class="k">return</span> state
+
+<span class="k">def</span> <span class="t">guardrail_check</span>(state: DetectState) -> DetectState:
+    <span class="c"># 护栏：① 不出现"作弊/抄袭/AI 代写"等定性词；② 结论必须声明"仅供参考"；</span>
+    <span class="c"># ③ 每条证据必须能定位回原文区间；④ 置信度低时不得给高关注等级</span>
+    ok = guardrails.validate(state)
+    <span class="k">if not</span> ok:
+        state[<span class="s">"summary"</span>] = build_neutral_summary(state)   <span class="c"># 降级为中性描述</span>
+        state[<span class="s">"risk_level"</span>] = <span class="s">"低关注"</span>
+    state[<span class="s">"guardrail_passed"</span>] = ok
+    <span class="k">return</span> state
+
+graph = StateGraph(DetectState)
+graph.add_node(<span class="s">"preprocess"</span>, preprocess)
+graph.add_node(<span class="s">"extract_stats"</span>, extract_stats)
+graph.add_node(<span class="s">"agent_analyze"</span>, agent_analyze)
+graph.add_node(<span class="s">"retrieve_cases"</span>, retrieve_cases)
+graph.add_node(<span class="s">"aggregate"</span>, aggregate)
+graph.add_node(<span class="s">"guardrail"</span>, guardrail_check)
+graph.set_entry_point(<span class="s">"preprocess"</span>)
+graph.add_edge(<span class="s">"preprocess"</span>, <span class="s">"extract_stats"</span>)
+graph.add_edge(<span class="s">"extract_stats"</span>, <span class="s">"agent_analyze"</span>)
+graph.add_edge(<span class="s">"agent_analyze"</span>, <span class="s">"retrieve_cases"</span>)
+graph.add_edge(<span class="s">"retrieve_cases"</span>, <span class="s">"aggregate"</span>)
+graph.add_edge(<span class="s">"aggregate"</span>, <span class="s">"guardrail"</span>)
+graph.add_edge(<span class="s">"guardrail"</span>, END)
+app = graph.compile()</pre>
+<p>降级分支：<code>extract_stats</code> 之后先探一次 <code>detect:model:health</code>；模型不可用时跳过 <code>agent_analyze</code> 与 <code>retrieve_cases</code>，直接进 <code>aggregate</code>，并把 <code>degraded=1</code> 回传 Java 侧，报告中显式标注「本次仅统计特征，未含模型语义分析」。</p>
+
+<h4>6.2 结构化输出契约（schema 先冻结）</h4>
+<pre><span class="c"># 模型输出必须是该 schema 约束的 JSON（Pydantic 模型 + 约束解码）</span>
+<span class="k">class</span> <span class="t">FeatureItem</span>(BaseModel):
+    feature_code: <span class="t">Literal</span>[<span class="s">"PARAPHRASE_TRACE"</span>, <span class="s">"WRITING_TRAJECTORY"</span>]
+    feature_value: <span class="t">float</span>
+    feature_score: <span class="t">float</span>          <span class="c"># 0-1</span>
+    feature_text: <span class="t">str</span>             <span class="c"># 中性描述，禁止定性词</span>
+
+<span class="k">class</span> <span class="t">EvidenceItem</span>(BaseModel):
+    feature_code: <span class="t">str</span>
+    begin_pos: <span class="t">int</span>              <span class="c"># 原文起始字符位（与 submissions.raw_text 对齐）</span>
+    end_pos: <span class="t">int</span>
+    snippet: <span class="t">str</span>
+    reason: <span class="t">str</span>                <span class="c"># 何以成为证据（中性描述）</span>
+
+<span class="k">class</span> <span class="t">DetectOutput</span>(BaseModel):
+    features: <span class="t">List</span>[FeatureItem]
+    evidences: <span class="t">List</span>[EvidenceItem]
+    suggestion: <span class="t">str</span>              <span class="c"># 复核建议：如"建议教师结合写作过程材料人工确认"</span></pre>
+
+<h4>6.3 MCP Server 工具契约（Java 侧调用）</h4>
+<table>
+<tr><th>工具名</th><th>入参</th><th>出参</th><th>用途</th></tr>
+<tr><td>detect_text</td><td>submission_id, text, config_version</td><td>features[], evidences[], risk_score, risk_level, confidence, summary, suggestion, degraded</td><td>执行一次完整检测（LangGraph 主入口）</td></tr>
+<tr><td>explain_feature</td><td>feature_code, feature_value, snippets[]</td><td>feature_text, reason</td><td>把单个特征值翻译为教师可读的中性说明</td></tr>
+<tr><td>recommend_review</td><td>submission_id, features[]</td><td>suggestion, policy_refs[]</td><td>给出复核建议并引用校规条文（教务/学籍管理规定）</td></tr>
+<tr><td>search_similar_cases</td><td>text, top_k</td><td>cases[{snippet, conclusion}]</td><td>相似案例召回（供教师参考，不参与评分）</td></tr>
+</table>
+<pre><span class="c"># MCP Server 工具定义（Python 侧）</span>
+<span class="k">from</span> mcp <span class="k">import</span> tool
+
+<span class="k">@tool</span>
+<span class="k">def</span> <span class="t">detect_text</span>(submission_id: <span class="t">int</span>, text: <span class="t">str</span>, config_version: <span class="t">str</span>) -> dict:
+    <span class="s">"""对一段课程作业文本执行多特征检测，返回特征证据与复核建议（不给定性结论）。
+
+    Args:
+        submission_id: 提交 ID（用于结果回写关联）
+        text: 去噪后的作业纯文本
+        config_version: 检测配置版本（决定权重与阈值）
+
+    Returns:
+        {features, evidences, risk_score, risk_level, confidence,
+         summary, suggestion, degraded, guardrail_passed}
+    """</span>
+    cfg = load_config(config_version)
+    state = DetectState(submission_id=submission_id, text=text, char_count=<span class="n">0</span>,
+                        chunks=[], stats_features=[], llm_features=[], evidences=[],
+                        features=[], risk_score=<span class="n">0.0</span>, risk_level=<span class="s">""</span>,
+                        confidence=<span class="n">0.0</span>, summary=<span class="s">""</span>, suggestion=<span class="s">""</span>,
+                        case_refs=[], guardrail_passed=<span class="k">True</span>)
+    result = app.invoke(state, config={<span class="s">"configurable"</span>: {<span class="s">"cfg"</span>: cfg}})
+    <span class="k">return</span> {<span class="s">"features"</span>: result[<span class="s">"features"</span>],
+            <span class="s">"evidences"</span>: result[<span class="s">"evidences"</span>],
+            <span class="s">"risk_score"</span>: result[<span class="s">"risk_score"</span>],
+            <span class="s">"risk_level"</span>: result[<span class="s">"risk_level"</span>],
+            <span class="s">"confidence"</span>: result[<span class="s">"confidence"</span>],
+            <span class="s">"summary"</span>: result[<span class="s">"summary"</span>],
+            <span class="s">"suggestion"</span>: result[<span class="s">"suggestion"</span>],
+            <span class="s">"degraded"</span>: agent_unavailable()}</pre>
+
+<h4>6.4 案例 RAG 工程（证据样例库 + 校规条文）</h4>
+<ul>
+<li><b>数据源</b>：① 校内既往已复核归档的争议案例（脱敏后的片段 + 复核结论，来自 <code>appeal_reviews</code> 与 <code>evidence-samples</code>）；② 课程考核办法、学籍管理规定、学术规范说明等条文。</li>
+<li><b>切片</b>：案例按「问题段落 + 结论」成对切片，chunk_size 384，overlap 64；条文按条款切分。</li>
+<li><b>检索</b>：BM25 + 向量混合（bge-small-zh），Rerank 用 bge-reranker，top_k=3。</li>
+<li><b>忠实度</b>：生成建议中引用的条文必须能在原文定位，不可定位则删除该引用（避免"编造校规"）。</li>
+<li><b>不参与评分</b>：案例召回结果只作参考展示，<b>不进入 risk_score 计算</b>——避免"因为像旧案例所以判高关注"的循环论证。</li>
+</ul>
+
+<h4>6.5 护栏（Guardrails）与 Agent Eval</h4>
+<table>
+<tr><th>维度</th><th>规则</th><th>违规处置</th></tr>
+<tr><td>禁止定性词</td><td>输出不得含「作弊 / 抄袭 / 代写 / 造假 / 认定」等词</td><td>命中即改写为中性描述；仍命中则降级为特征原文</td></tr>
+<tr><td>必须可溯源</td><td>每条证据必须有 <code>begin_pos/end_pos</code> 且能在原文定位</td><td>定位失败的证据直接丢弃，不写报告</td></tr>
+<tr><td>仅供参考声明</td><td><code>summary</code> 必须含「本结果供教师复核参考，不作为处理依据」</td><td>缺失则自动补写</td></tr>
+<tr><td>置信度约束</td><td>置信度低（可用特征 &lt;2 条或字数不足）不得判「高关注」</td><td>自动降级为「低关注」并提示证据不足</td></tr>
+<tr><td>隐私不外传</td><td>文本只送本地模型；调用链不含外部公网地址</td><td>配置层硬编码白名单，越界请求直接拒绝</td></tr>
+</table>
+<pre><span class="c"># eval/run_eval.py —— 留出集回归（Agent Eval）</span>
+<span class="c"># 指标口径：holdout 200 份（人工 100 / AI 100），逐份跑 detect_text 后统计</span>
+<span class="c">#   召回率 recall   = 判为"中/高关注"的 AI 文本数 / AI 文本总数     目标 ≥ 0.85</span>
+<span class="c">#   误报率 fpr      = 判为"中/高关注"的人工文本数 / 人工文本总数   目标 ≤ 0.10</span>
+<span class="c">#   证据命中率 cover = 有至少 1 条可定位证据的样本数 / 总样本数      目标 ≥ 0.95</span>
+<span class="c">#   护栏通过率 guard = 通过 guardrails 校验的输出数 / 总输出数       目标 = 1.00</span>
+python eval/run_eval.py --config v1 --holdout datasets/holdout_200.jsonl \
+       --report eval/reports/v1.json</pre>
+
+<h2 id="s7">7　两栈对接（Java ↔ Python 协议契约）</h2>
+<p>Java 微服务（业务与数据服务化）与 Python AI 层（检测与解释）以 MCP 协议对接。Java 侧 <code>integrity-detect</code> 为 MCP Client，Python 侧 <code>integrity-ai-detector</code> 为 MCP Server。降级策略：AI 服务超时 / 熔断 / 探针失败时，detect 服务切纯统计特征模式，仍出特征明细与证据，只是不含语义分析。</p>
+<table>
+<tr><th>调用方</th><th>被调方</th><th>协议</th><th>超时</th><th>降级</th></tr>
+<tr><td>detect（Java）</td><td>ai-detector（Python MCP Server）· detect_text</td><td>MCP over HTTP</td><td>30s（长文本）/ 15s（短文本）</td><td>纯统计特征模式，degraded=1</td></tr>
+<tr><td>detect（Java）</td><td>ai-detector · explain_feature</td><td>MCP over HTTP</td><td>8s</td><td>直接用 <code>feature_text_template</code> 模板渲染</td></tr>
+<tr><td>appeal（Java）</td><td>ai-detector · recommend_review</td><td>MCP over HTTP</td><td>8s</td><td>返回固定建议文案「请结合课程要求与写作过程材料人工复核」</td></tr>
+<tr><td>evidence（Java）</td><td>ai-detector · search_similar_cases</td><td>MCP over HTTP</td><td>5s</td><td>直接走 ES <code>more_like_this</code></td></tr>
+</table>
+<pre><span class="c">// Java 侧 MCP Client（detect）</span>
+<span class="k">@FeignClient</span>(name = <span class="s">"ai-detector"</span>, url = <span class="s">"${ai.mcp.url}"</span>, fallback = <span class="t">AiDetectorFallback</span>.<span class="k">class</span>)
+<span class="k">public interface</span> <span class="t">AiDetectorClient</span> {
+    <span class="k">@PostMapping</span>(<span class="s">"/mcp/tools/detect_text"</span>)
+    <span class="t">DetectOutputDTO</span> <span class="t">detectText</span>(<span class="k">@RequestBody</span> <span class="t">DetectInput</span> input);
+}
+
+<span class="c">// 降级兜底：纯统计特征（复用 Java 侧轻量统计，不依赖模型）</span>
+<span class="k">@Component</span>
+<span class="k">public class</span> <span class="t">AiDetectorFallback</span> <span class="k">implements</span> <span class="t">AiDetectorClient</span> {
+    <span class="k">public</span> <span class="t">DetectOutputDTO</span> <span class="t">detectText</span>(<span class="t">DetectInput</span> input) {
+        <span class="t">List</span>&lt;<span class="t">FeatureItem</span>&gt; f = statsOnlyAnalyzer.run(input.getText());  <span class="c">// 突发度/词汇丰富度/结构规律性</span>
+        <span class="k">return</span> <span class="t">DetectOutputDTO</span>.builder()
+                .features(f).evidences(<span class="t">List</span>.of())
+                .confidence(<span class="n">0.3</span>).degraded(<span class="k">true</span>)
+                .summary(<span class="s">"AI 检测服务暂不可用，本次仅统计特征，未含语义分析，请勿据此处理。"</span>)
+                .build();
+    }
+}</pre>
+<p>契约稳定性要求：<code>detect_text / explain_feature / recommend_review / search_similar_cases</code> 四个工具的出参字段一旦冻结（配置冻结节点内）不再增删，只允许在末尾追加可选字段；Java 侧 DTO 用 <code>@JsonIgnoreProperties(ignoreUnknown = true)</code> 保持前后兼容。</p>
+<p>注：Spring AI / LangChain4j 可作为无 Python 运行环境时的纯 Java 等价方案（用本地模型 HTTP 接口 + Java 侧统计特征），但本项目以 LangGraph + MCP 为 AI 主方案，Spring AI 仅作降级备选，不作为唯一实现。</p>
+
+<h2 id="s8">8　容器化运维落地</h2>
+<h4>8.1 Dockerfile（Java 服务通用）</h4>
+<pre><span class="k">FROM</span> eclipse-temurin:17-jre-alpine
+<span class="k">WORKDIR</span> /app
+<span class="k">COPY</span> target/*.jar app.jar
+<span class="k">ENV</span> JAVA_OPTS=<span class="s">"-Xms256m -Xmx768m -XX:+UseG1GC"</span>
+<span class="k">ENV</span> SPRING_PROFILES_ACTIVE=prod
+<span class="k">ENV</span> NACOS_ADDR=<span class="s">${NACOS_ADDR}</span>
+<span class="k">EXPOSE</span> 8003
+<span class="k">ENTRYPOINT</span> [<span class="s">"sh"</span>, <span class="s">"-c"</span>, <span class="s">"java $JAVA_OPTS -jar app.jar"</span>]</pre>
+<h4>8.2 Dockerfile（AI 检测服务）</h4>
+<pre><span class="k">FROM</span> python:3.11-slim
+<span class="k">WORKDIR</span> /srv
+<span class="k">COPY</span> requirements.txt .
+<span class="k">RUN</span> pip install --no-cache-dir -r requirements.txt
+<span class="k">COPY</span> . .
+<span class="k">ENV</span> OLLAMA_HOST=<span class="s">${OLLAMA_HOST:http://ollama:11434}</span>
+<span class="k">ENV</span> MODEL_NAME=qwen2.5-7b-instruct-q4
+<span class="k">EXPOSE</span> 9000
+<span class="k">CMD</span> [<span class="s">"python"</span>, <span class="s">"-m"</span>, <span class="s">"mcp_server.server"</span>]</pre>
+<h4>8.3 docker-compose（开发环境全栈）</h4>
+<pre>services:
+  mysql:      { image: mysql:8.0, ports: [<span class="s">"3306:3306"</span>], environment: { MYSQL_ROOT_PASSWORD: rootpwd } }
+  redis:      { image: redis:7-alpine, ports: [<span class="s">"6379:6379"</span>] }
+  rocketmq-namesrv: { image: apache/rocketmq:5.3, ports: [<span class="s">"9876:9876"</span>] }
+  rocketmq-broker:  { image: apache/rocketmq:5.3, depends_on: [rocketmq-namesrv] }
+  elasticsearch: { image: elasticsearch:8.12, environment: { discovery.type: single-node, xpack.security.enabled: false } }
+  minio:      { image: minio/minio, ports: [<span class="s">"9000:9000"</span>], command: server /data }
+  nacos:      { image: nacos/nacos:v2.3, environment: { MODE: standalone } }
+  ollama:     { image: ollama/ollama, ports: [<span class="s">"11434:11434"</span>], volumes: [<span class="s">"./models:/root/.ollama"</span>] }
+  detect:     { build: ., depends_on: [mysql, redis, nacos, rocketmq-namesrv] }
+  ai-detector: { build: ./integrity-ai-detector, depends_on: [ollama, elasticsearch] }</pre>
+<p>开发期模型可用 Ollama 拉取 7B 量化模型（约 4–5GB），一台 12GB 显存显卡即可跑通全链路；无显卡时可用 CPU 推理跑通功能链路，仅检测耗时变长（评测与演示建议用显卡机器）。</p>
+<h4>8.4 K8s deployment（detect 示例）</h4>
+<pre><span class="k">apiVersion</span>: apps/v1
+<span class="k">kind</span>: Deployment
+<span class="k">metadata</span>: { name: detect }
+<span class="k">spec</span>:
+  replicas: 2
+  selector: { matchLabels: { app: detect } }
+  template:
+    metadata: { labels: { app: detect } }
+    spec:
+      containers:
+      - name: detect
+        image: registry.local/integrity/detect:latest
+        ports: [{ containerPort: 8003 }]
+        env:
+        - { name: NACOS_ADDR, value: <span class="s">"nacos:8848"</span> }
+        - { name: AI_MCP_URL, value: <span class="s">"http://ai-detector:9000"</span> }
+        resources: { requests: { cpu: 500m, memory: 512Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+---
+<span class="k">apiVersion</span>: apps/v1
+<span class="k">kind</span>: Deployment
+<span class="k">metadata</span>: { name: ai-detector }
+<span class="k">spec</span>:
+  replicas: 1
+  selector: { matchLabels: { app: ai-detector } }
+  template:
+    metadata: { labels: { app: ai-detector } }
+    spec:
+      containers:
+      - name: ai-detector
+        image: registry.local/integrity/ai-detector:latest
+        ports: [{ containerPort: 9000 }]
+        env:
+        - { name: OLLAMA_HOST, value: <span class="s">"http://ollama:11434"</span> }
+        resources: { requests: { cpu: 1000m, memory: 2Gi, <span class="s">"nvidia.com/gpu"</span>: 1 },
+                     limits:    { cpu: 2000m, memory: 4Gi, <span class="s">"nvidia.com/gpu"</span>: 1 } }</pre>
+<h4>8.5 Nginx 反代</h4>
+<pre>upstream integrity_ui { server 127.0.0.1:80; }
+upstream gateway { server 127.0.0.1:8080; }
+server {
+  listen 443 ssl http2;
+  ssl_certificate     /etc/nginx/ssl/integrity.crt;
+  ssl_certificate_key /etc/nginx/ssl/integrity.key;
+  client_max_body_size 20m;                     <span class="c"># 作业文件上传上限</span>
+  location / { proxy_pass http://integrity_ui; }
+  location /api/ { proxy_pass http://gateway; proxy_set_header X-Real-IP $remote_addr; }
+  location /ws  { proxy_pass http://gateway; proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade; }
+}</pre>
+<p>离线演示要求：全部服务可在一台机器上以 docker-compose 起全栈（含 Ollama），无需公网。答辩现场断网也能完成上传→检测→证据→申诉全流程演示。</p>
+
+<h2 id="s9">9　前端落地（教师工作台 + 证据可视化 + 申诉流程）</h2>
+<p>Vue3 + Vite + Pinia + ECharts。复用「智学云」管理后台模板。四个核心页面：教师工作台（作业列表与检测状态）、检测详情页（原文证据高亮 + 特征雷达）、申诉处理台（工单流转）、课程统计看板（分布与趋势）。</p>
+<h4>9.1 工程结构</h4>
+<pre>integrity-ui/
+├── src/
+│   ├── views/
+│   │   ├── Workbench.vue          <span class="c"># 教师工作台：作业列表（关注等级筛选 + 批量检测 + 状态）</span>
+│   │   ├── DetectDetail.vue       <span class="c"># 检测详情：证据高亮原文 + 特征雷达 + 检测说明 + 复核建议</span>
+│   │   ├── AppealDesk.vue         <span class="c"># 申诉处理台：工单列表 + 复核表单 + 佐证查看</span>
+│   │   └── Dashboard.vue          <span class="c"># 课程统计看板：班级分布 + 关注等级构成 + 申诉率趋势</span>
+│   ├── components/
+│   │   ├── EvidenceHighlight.vue  <span class="c"># 证据高亮组件（按 begin_pos/end_pos 渲染原文与色块）</span>
+│   │   ├── FeatureRadar.vue       <span class="c"># 特征雷达图（6 维特征 → 风险分，ECharts）</span>
+│   │   ├── FeatureBar.vue         <span class="c"># 特征条形图（原始值 + 权重 + 单条说明）</span>
+│   │   ├── EvidenceCard.vue       <span class="c"># 单条证据卡（片段 + 何以成为证据 + 定位跳转）</span>
+│   │   ├── ConfidenceBadge.vue    <span class="c"># 置信度徽标（高/中/低 + 证据充分性解释）</span>
+│   │   ├── AppealTimeline.vue     <span class="c"># 申诉流程时间线（提交→受理→复核→结论→归档）</span>
+│   │   └── Desensitize.vue        <span class="c"># 脱敏展示组件（学号/姓名）</span>
+│   ├── store/                     <span class="c"># Pinia：auth / submissionList / detectDetail / appeal</span>
+│   ├── api/                       <span class="c"># axios 封装 + 接口定义</span>
+│   └── router/
+└── vite.config.ts</pre>
+<h4>9.2 证据高亮渲染（核心交互）</h4>
+<pre><span class="c">// EvidenceHighlight.vue：把多段证据区间渲染到原文上，可点击跳转并联动说明卡</span>
+<span class="k">const</span> segments = computed(() =&gt; {
+  <span class="k">const</span> txt = props.rawText;                 <span class="c">// 后端返回的 submissions.raw_text</span>
+  <span class="k">const</span> evs = [...props.evidences].sort((a, b) =&gt; a.beginPos - b.beginPos);
+  <span class="k">let</span> cur = <span class="n">0</span>; <span class="k">const</span> out = [];
+  <span class="k">for</span> (<span class="k">const</span> e <span class="k">of</span> evs) {
+    <span class="k">if</span> (e.beginPos &gt; cur) out.push({ text: txt.slice(cur, e.beginPos), ev: <span class="k">null</span> });
+    out.push({ text: txt.slice(e.beginPos, e.endPos), ev: e });
+    cur = e.endPos;
+  }
+  <span class="k">if</span> (cur &lt; txt.length) out.push({ text: txt.slice(cur), ev: <span class="k">null</span> });
+  <span class="k">return</span> out;                               <span class="c">// 前端只做渲染，不重算任何特征</span>
+});
+<span class="c">// 点击色块 → 高亮关联的 EvidenceCard（按 feature_code 归组）；</span>
+<span class="c">// 页面顶部固定展示"置信度 + 仅供参考声明"，避免教师只看分数不看证据。</span></pre>
+<h4>9.3 检测详情页信息层级（强制顺序）</h4>
+<ol>
+<li><b>仅供参考声明条</b>（置顶，不可折叠）：本结果由特征分析生成，仅供教师复核参考，不作为处理依据。</li>
+<li><b>置信度 + 风险等级</b>：置信度低时风险等级自动展示为「低关注 · 证据不足」。</li>
+<li><b>特征雷达 + 特征明细表</b>：每个特征给原始值、归一化分、权重、单条中性说明。</li>
+<li><b>证据区</b>：原文高亮 + 逐条证据卡（片段 / 何以成为证据 / 定位跳转）。</li>
+<li><b>复核建议 + 可引用条文</b>（来自 RAG，标注"条文引用仅供参考"）。</li>
+<li><b>申诉入口</b>：一键发起申诉工单（若该作业允许申诉）。</li>
+</ol>
+<h4>9.4 脱敏展示规范</h4>
+<ul>
+<li>学号：前 6 位 + ******（如 2024 01******）</li>
+<li>姓名：保留姓 + *（如 张*）；详情页内亦不展示完整姓名</li>
+<li>下载导出：报告文件名用「课程_作业_学号后 4 位」，不含姓名</li>
+<li>列表页默认不展示原始分数，只展示关注等级与置信度</li>
+</ul>
+
+<h2 id="s10">10　联调与验收（make verify）</h2>
+<table>
+<tr><th>验收项</th><th>验收命令</th><th>通过标准</th></tr>
+<tr><td>提交与解析</td><td>make verify-submit</td><td>docx/pdf/txt 三类各 5 份解析成功，字符数与源文件一致（±2%）</td></tr>
+<tr><td>检测链路</td><td>make verify-detect</td><td>提交后 30s 内出结果，特征明细 6 条齐全，证据区间可在原文定位</td></tr>
+<tr><td>证据可溯源</td><td>make verify-evidence</td><td>抽样 20 条证据，原文切片与 snippet 100% 一致</td></tr>
+<tr><td>检测效果</td><td>make verify-eval</td><td>留出集召回率 ≥0.85、误报率 ≤0.10、证据命中率 ≥0.95</td></tr>
+<tr><td>护栏</td><td>make verify-guardrail</td><td>100 条输出零定性词；低置信度无一例判高关注</td></tr>
+<tr><td>申诉闭环</td><td>make verify-appeal</td><td>高关注 → 自动建工单 → 复核 → 结论回写 → 阈值反馈入候选池，全链路通</td></tr>
+<tr><td>降级路径</td><td>make verify-degrade</td><td>停掉 Ollama 后检测仍出结果，degraded=1 且报告含降级标注</td></tr>
+<tr><td>权限与审计</td><td>make verify-auth</td><td>跨课程越权访问全部 403，audit_logs 留痕</td></tr>
+<tr><td>容器化</td><td>make verify-deploy</td><td>docker-compose 全栈 Up，HTTPS 可访问，断网可完成全流程演示</td></tr>
+</table>
+<pre><span class="c"># Makefile</span>
+verify: verify-submit verify-detect verify-evidence verify-eval verify-guardrail \
+        verify-appeal verify-degrade verify-auth verify-deploy
+
+verify-detect:
+	curl -s localhost:8003/api/detect/run -d '@samples/detect.json' | jq '.data.features | length' | awk '$$1&gt;=6'
+
+verify-eval:
+	python eval/run_eval.py --config v1 --holdout datasets/holdout_200.jsonl | \
+	  jq -e '.recall&gt;=0.85 and .fpr&lt;=0.10 and .cover&gt;=0.95'
+
+verify-degrade:
+	docker compose stop ollama && \
+	curl -s localhost:8003/api/detect/run -d '@samples/detect.json' | jq -e '.data.degraded==true' && \
+	docker compose start ollama</pre>
+
+<h2 id="s11">11　卡点排障</h2>
+<table>
+<tr><th>症状</th><th>原因</th><th>解决</th></tr>
+<tr><td>提交后一直「待检测」不流转</td><td>RocketMQ <code>integrity-submit</code> 消息未消费 / 消费组未启动</td><td>查 Broker 消费 offset；确认 detect 服务 consumer group 注册；查死信队列</td></tr>
+<tr><td>检出结果但特征只有统计类 3 条</td><td>降级被触发（模型探针失败 / 超时）</td><td>查 <code>detect:model:health</code>；查 ai-detector 容器日志与 OLLAMA_HOST 连通性；确认不是显卡显存溢出</td></tr>
+<tr><td>前端证据高亮错位（切到别的字）</td><td>后端证据区间基于去噪后文本，前端却渲染了带格式的原始文件</td><td>前端必须渲染 <code>submissions.raw_text</code>；解析阶段保证 <code>raw_text</code> 与证据定位同一坐标系</td></tr>
+<tr><td>某些证据显示「无法定位」被丢弃</td><td>模型给的区间越界或与原文不匹配</td><td>护栏已丢弃该条；检查 preprocess 分句是否与模型 prompt 中给的分句编号一致</td></tr>
+<tr><td>短作业全部判「证据不足」</td><td>字符数低于 <code>min_chars</code>（200）</td><td>属预期行为；对短文本作业在 assignment 层配置「不做综合评分，只出特征明细」</td></tr>
+<tr><td>留出集召回率突然下降</td><td>换了模型版本 / 调了阈值未跑回归</td><td>跑 <code>make verify-eval</code> 对比历史 <code>eval/reports/*.json</code>；用 <code>/api/detect/replay</code> 按新版配置复算历史样本定位退化点</td></tr>
+<tr><td>同一学生重复提交重复计费式重算</td><td><code>detect:dup:{textSha256}</code> 未命中</td><td>确认 textSha256 在解析阶段写入；查 Redis key 是否被提前淘汰</td></tr>
+<tr><td>跨服务写部分成功（报告有、证据空）</td><td>Seata 全局事务未覆盖 / 分支超时</td><td>查 Seata Server undolog；确认 <code>@GlobalTransactional</code> 未漏；调大分支超时</td></tr>
+<tr><td>模型输出里出现定性词</td><td>护栏规则未命中该变体（如「疑似代写」）</td><td>扩充禁止词表与同义变体；验证 guardrail 单测覆盖新增词；必要时前置到 Prompt 约束</td></tr>
+<tr><td>不同课程对同一写法判定不一致</td><td>用了不同配置版本</td><td>属预期（按课程可配）；报告必须展示 <code>config_version</code>；如非有意，统一课程绑定同一 <code>config_id</code></td></tr>
+<tr><td>导出报告文件名含姓名</td><td>导出模板未走脱敏</td><td>统一走 9.4 命名规则；导出入口二次校验</td></tr>
+</table>
+
+</div>
+<button id="wbTop" class="wbtop" type="button" title="返回顶部" aria-label="返回顶部"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 4.1 3.5 12.6h4.9V20h7.2v-7.4h4.9z" fill="currentColor"/></svg></button>
+<style>
+.wbtop{position:fixed;right:22px;bottom:24px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid #d3d5f5;border-radius:50%;background:#fff;color:#534AB7;cursor:pointer;box-shadow:0 6px 18px rgba(83,74,183,.16);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s,transform .22s,background .18s,color .18s,border-color .18s;z-index:9990;}
+.wbtop.on{opacity:1;visibility:visible;transform:none;}
+.wbtop:hover{background:#534AB7;border-color:#534AB7;color:#fff;}
+.wbtop:active{transform:scale(.94);}
+@media print{.wbtop{display:none!important;}}
+</style>
+<script>
+(function(){
+ var b=document.getElementById('wbTop');if(!b)return;
+ var box=null;
+ function top(){ if(box)return box.scrollTop; var d=document.scrollingElement||document.documentElement; return d.scrollTop||document.body.scrollTop||0; }
+ function detect(){ box=null; var d=document.scrollingElement||document.documentElement; if(d.scrollHeight>window.innerHeight+240)return; var n=document.querySelectorAll('div,main,section,article'),i,e; for(i=0;i<n.length;i++){e=n[i]; var ov=getComputedStyle(e).overflowY; if((ov==='auto'||ov==='scroll')&&e.scrollHeight>e.clientHeight+240){box=e;return;} } }
+ function sync(){ if(top()>400){b.className='wbtop on';}else{b.className='wbtop';} }
+ window.addEventListener('scroll',sync,{passive:true});
+ document.addEventListener('scroll',sync,{passive:true,capture:true});
+ window.addEventListener('resize',function(){detect();sync();});
+ b.addEventListener('click',function(){ if(box){box.scrollTo({top:0,behavior:'smooth'});} else{window.scrollTo({top:0,behavior:'smooth'});} sync(); });
+ detect();sync();
+})();
+</script>
+</body>
+</html>

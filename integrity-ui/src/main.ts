@@ -1,0 +1,35 @@
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import App from './App.vue';
+import router from './router';
+import './styles/index.scss';
+
+const app = createApp(App);
+
+// 图标同时注册两种命名：
+//  - ele-Xxx：对齐「智学云 / vue-next-admin」约定（如 <ele-Search />）
+//  - Xxx    ：兼容直接写组件名（如 <Search />）与 <component :is="'Search'" />
+for (const [key, comp] of Object.entries(ElementPlusIconsVue)) {
+  app.component('ele-' + key, comp as any);
+  app.component(key, comp as any);
+}
+
+// 全局兜底：渲染/生命周期里抛错不再静默（Vue Router 遇到目标组件报错会中止导航，
+// 表现成"点了没反应"，所以这里显式提示出来）
+app.config.errorHandler = (err: any, _instance, info) => {
+  console.error('[app error]', info, err);
+  ElMessage?.error?.('页面渲染出错：' + (err?.message || err));
+};
+router.onError((err) => {
+  console.error('[router error]', err);
+  ElMessage?.error?.('路由出错：' + err.message);
+});
+
+app.use(createPinia());
+app.use(router);
+app.use(ElementPlus);
+app.mount('#app');

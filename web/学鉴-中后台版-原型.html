@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学鉴 · 课程作业AI生成内容检测与学术诚信工具（中后台原型）</title>
+<link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+<style>
+/* ============================================================
+   设计令牌 —— 对齐 vue-next-admin：src/theme/app.scss
+   ============================================================ */
+:root{
+  --next-color-white:#ffffff;
+  --next-bg-main-color:#f8f8f8;
+  --next-bg-color:#f5f5ff;
+  --next-border-color-light:#f1f2f3;
+  --next-color-primary-lighter:#ecf5ff;
+  --next-color-success-lighter:#f0f9eb;
+  --next-color-warning-lighter:#fdf6ec;
+  --next-color-danger-lighter:#fef0f0;
+  --next-bg-topBar:#ffffff;
+  --next-bg-topBarColor:#606266;
+  --next-bg-menuBar:#ffffff;
+  --next-bg-menuBarColor:#5b6472;
+  --next-bg-menuBarActiveColor:#eef4ff;
+}
+[data-theme="dark"]{
+  --next-bg-main-color:#1f1f1f;
+  --next-color-white:#191919;
+  --next-border-color-light:#333333;
+  --next-bg-topBar:#191919;
+  --next-bg-topBarColor:#dadada;
+  --next-bg-menuBar:#191919;
+  --next-bg-menuBarColor:#c0c4cc;
+  --next-bg-menuBarActiveColor:#1d1e1f;
+  --el-text-color-primary:#dadada;
+  --el-text-color-secondary:#9b9da1;
+  --el-border-color:#424242;
+  --el-bg-color:#191919;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--next-bg-main-color);
+  font-family:Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+  font-size:14px;font-weight:400;color:var(--el-text-color-primary);
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#d0d0d0;border-radius:3px}
+
+/* ---------- 工具类（对齐 references/utility-classes.md） ---------- */
+.layout-pd{padding:15px}
+.layout-padding{padding:15px}
+.layout-padding-auto{height:100%}
+.flex{display:flex}
+.flex-warp{display:flex;flex-wrap:wrap}
+.flex-auto{flex:1}
+.flex-margin{margin:auto}
+.cursor-pointer{cursor:pointer}
+.w100{width:100%}
+.h100{height:100%}
+.text-center{text-align:center}
+.mt5{margin-top:5px}.mt10{margin-top:10px}.mt15{margin-top:15px}.mt20{margin-top:20px}
+.mb5{margin-bottom:5px}.mb10{margin-bottom:10px}.mb15{margin-bottom:15px}.mb20{margin-bottom:20px}
+.ml5{margin-left:5px}.ml10{margin-left:10px}.ml15{margin-left:15px}
+.mr5{margin-right:5px}.mr10{margin-right:10px}
+.font12{font-size:12px}.font13{font-size:13px}.font16{font-size:16px}.font20{font-size:20px}
+.font30{font-size:30px}.font32{font-size:32px}
+.color-primary{color:var(--el-color-primary)}
+.color-success{color:var(--el-color-success)}
+.color-warning{color:var(--el-color-warning)}
+.color-danger{color:var(--el-color-danger)}
+.color-info{color:var(--el-text-color-secondary)}
+
+/* ============================================================
+   布局骨架 —— 复刻 vue-next-admin layout
+   ============================================================ */
+.layout{display:flex;height:100vh;overflow:hidden}
+.layout-aside{
+  width:220px;flex:0 0 220px;background:var(--next-bg-menuBar);
+  border-right:1px solid var(--next-border-color-light);
+  box-shadow:2px 0 6px rgb(0 21 41 / 1%);
+  display:flex;flex-direction:column;transition:width .3s ease;z-index:10;
+}
+.layout-aside .logo{
+  height:50px;display:flex;align-items:center;justify-content:center;gap:8px;
+  border-bottom:1px solid var(--next-border-color-light);flex:0 0 50px;
+}
+.layout-aside .logo .logo-mark{
+  width:26px;height:26px;border-radius:5px;background:var(--el-color-primary);
+  color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700;
+}
+.layout-aside .logo .logo-name{font-size:16px;font-weight:700;color:var(--el-text-color-primary);letter-spacing:1px}
+.layout-aside .menu{flex:1;overflow-y:auto;padding:8px 0}
+.menu-group{margin-bottom:2px}
+.menu-group-title{
+  padding:12px 20px 6px;font-size:12px;color:var(--el-text-color-secondary);letter-spacing:1px;
+}
+.menu-item{
+  display:flex;align-items:center;gap:10px;height:48px;padding:0 20px;cursor:pointer;
+  color:var(--next-bg-menuBarColor);font-size:14px;transition:background .3s ease,color .3s ease;
+  border:0;background:transparent;width:100%;text-align:left;
+}
+.menu-item:hover{background:var(--next-bg-menuBarActiveColor)}
+.menu-item.is-active{background:var(--next-bg-menuBarActiveColor);color:var(--el-color-primary);font-weight:500}
+.menu-item .el-icon{font-size:16px}
+.menu-item .badge{margin-left:auto}
+.layout-aside .aside-foot{
+  padding:10px 20px;border-top:1px solid var(--next-border-color-light);
+  font-size:12px;color:var(--el-text-color-secondary);line-height:1.8;flex:0 0 auto;
+}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--el-color-success);margin-right:6px;vertical-align:middle}
+.dot.off{background:var(--el-text-color-secondary)}
+
+.layout-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.layout-header{
+  height:50px;flex:0 0 50px;background:var(--next-bg-topBar);
+  border-bottom:1px solid var(--next-border-color-light);
+  display:flex;align-items:center;padding:0 15px;gap:12px;z-index:9;
+}
+.layout-header .crumb{font-size:13px;color:var(--el-text-color-secondary)}
+.layout-header .crumb b{color:var(--el-text-color-primary);font-weight:500}
+.layout-header .head-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.layout-header .head-right .el-icon{font-size:16px;color:var(--next-bg-topBarColor);cursor:pointer}
+.layout-header .user{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--el-text-color-regular)}
+.layout-content{flex:1;overflow-y:auto;background:var(--next-bg-main-color)}
+
+/* ---------- 首页统计卡（复刻 home-card-item） ---------- */
+.home-card-item{
+  background:var(--next-color-white);border:1px solid var(--next-border-color-light);
+  border-radius:4px;padding:20px;height:100%;box-shadow:0 1px 2px rgba(0,21,41,.03);
+  transition:box-shadow .3s ease;
+}
+.home-card-item:hover{box-shadow:0 2px 12px rgba(0,21,41,.06)}
+.home-card-item-icon{
+  width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.home-card-item-icon i{font-style:normal;font-size:24px}
+.home-card-title{font-size:14px;color:var(--el-text-color-regular)}
+.home-card-num{font-size:30px;font-weight:600;color:var(--el-text-color-primary);letter-spacing:-.5px}
+
+/* ---------- 业务页面 ---------- */
+.page-head{margin-bottom:15px}
+.page-head h2{margin:0;font-size:18px;font-weight:600;color:var(--el-text-color-primary)}
+.page-head p{margin:6px 0 0;font-size:13px;color:var(--el-text-color-secondary);max-width:66ch}
+.tip{margin-left:10px;color:var(--el-text-color-secondary);font-size:13px}
+.note-box{
+  margin-top:15px;padding:12px 15px;border-radius:4px;
+  background:var(--next-color-primary-lighter);border:1px solid var(--el-color-primary-light-8);
+  font-size:13px;color:var(--el-text-color-regular);line-height:1.8;
+}
+.note-box b{color:var(--el-text-color-primary)}
+
+/* 报告：正文与证据 */
+.doc{font-size:15px;line-height:2;color:var(--el-text-color-primary)}
+.doc p{margin:0 0 16px;padding-left:14px;border-left:2px solid var(--next-border-color-light)}
+.doc p.flag{border-left-color:var(--el-color-danger)}
+.doc p.warn{border-left-color:var(--el-color-warning)}
+.hl{background:var(--el-color-danger-light-9);border-bottom:1px dashed var(--el-color-danger-light-3);padding:1px 2px;border-radius:2px;cursor:pointer}
+.hl.warn{background:var(--el-color-warning-light-9);border-bottom-color:var(--el-color-warning-light-3)}
+.hl.on{background:var(--el-color-danger);color:#fff}
+.hl.warn.on{background:var(--el-color-warning);color:#fff}
+.para-meta{display:flex;align-items:center;gap:8px;margin:0 0 6px;padding-left:14px;font-size:12px;color:var(--el-text-color-secondary)}
+.ev-card{border:1px solid var(--el-color-danger-light-7);background:var(--el-color-danger-light-9);border-radius:4px;padding:14px}
+.ev-card.warn{border-color:var(--el-color-warning-light-7);background:var(--el-color-warning-light-9)}
+.ev-card .ev-h{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--el-color-danger);margin-bottom:8px}
+.ev-card.warn .ev-h{color:var(--el-color-warning)}
+.ev-card .ev-q{font-size:13px;line-height:1.8;padding-left:10px;border-left:2px solid currentColor;margin-bottom:10px;color:var(--el-text-color-primary)}
+.ev-card .ev-k{font-size:12px;color:var(--el-text-color-secondary);margin-bottom:3px}
+.ev-card .ev-t{font-size:13px;line-height:1.75;color:var(--el-text-color-regular)}
+
+/* 登录页 */
+.login-page{
+  min-height:100vh;display:grid;place-items:center;background:var(--next-bg-main-color);padding:24px;
+}
+.login-box{width:420px}
+.login-head{text-align:center;margin-bottom:22px}
+.login-head .logo-mark{
+  width:52px;height:52px;border-radius:10px;background:var(--el-color-primary);color:#fff;
+  display:inline-grid;place-items:center;font-size:26px;font-weight:700;margin-bottom:12px;
+}
+.login-head h1{margin:0;font-size:22px;letter-spacing:2px;color:var(--el-text-color-primary)}
+.login-head p{margin:8px 0 0;font-size:13px;color:var(--el-text-color-secondary)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- ============================ 应用模板 ============================ -->
+<script type="text/x-template" id="app-template">
+<div>
+  <!-- ---------------- 登录页 ---------------- -->
+  <div class="login-page" v-if="!state.login">
+    <div class="login-box">
+      <div class="login-head">
+        <div class="logo-mark">鉴</div>
+        <h1>学 鉴</h1>
+        <p>课程作业 AI 生成内容检测与学术诚信工具 · 学生端</p>
+      </div>
+      <el-card shadow="hover">
+        <el-form :model="state.loginForm" label-position="top" @submit.prevent>
+          <el-form-item label="学号">
+            <el-input v-model="state.loginForm.sid" placeholder="请输入学号" clearable />
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="state.loginForm.pwd" type="password" placeholder="请输入密码" show-password />
+          </el-form-item>
+          <el-button type="primary" class="w100" style="height:38px" @click="onLogin">登 录</el-button>
+        </el-form>
+        <div class="text-center mt15">
+          <el-link type="primary" :underline="false" @click="onEnterTeacher">教师端演示入口 →</el-link>
+        </div>
+      </el-card>
+      <p class="text-center color-info font12 mt15">演示环境 · 任意账号密码均可登录 · 示例数据</p>
+    </div>
+  </div>
+
+  <!-- ---------------- 后台布局 ---------------- -->
+  <div class="layout" v-else>
+    <!-- 侧栏 -->
+    <aside class="layout-aside">
+      <div class="logo">
+        <div class="logo-mark">鉴</div>
+        <div class="logo-name">学鉴</div>
+      </div>
+      <div class="menu">
+        <div class="menu-group" v-for="(g, gi) in menus" :key="gi">
+          <div class="menu-group-title">{{ g.title }}</div>
+          <button class="menu-item" :class="{'is-active': state.page === m.key}"
+                  v-for="m in g.items" :key="m.key" @click="go(m.key)">
+            <el-icon><component :is="m.icon" /></el-icon>
+            <span>{{ m.name }}</span>
+            <el-badge v-if="m.badge" :value="m.badge" class="badge" />
+          </button>
+        </div>
+      </div>
+      <div class="aside-foot">
+        <span class="dot" :class="{off: state.engine.busy}"></span>{{ state.engine.busy ? '本地检测引擎 · 分析中' : '本地检测引擎 · 已就绪' }}<br>
+        <span style="opacity:.75">数据不出校园 · {{ state.role === 'teacher' ? '教师端' : '学生端' }}</span>
+      </div>
+    </aside>
+
+    <!-- 主区 -->
+    <div class="layout-main">
+      <header class="layout-header">
+        <el-icon @click="state.collapse = !state.collapse"><Fold /></el-icon>
+        <div class="crumb">{{ state.role === 'teacher' ? '教师端' : '学生端' }} / <b>{{ pageName }}</b></div>
+        <div class="head-right">
+          <el-switch v-model="state.isDark" inline-prompt active-text="深" inactive-text="浅"
+                     @change="onToggleDark" style="margin-right:6px" />
+          <el-icon title="切换端" @click="switchRole"><Switch /></el-icon>
+          <el-badge :value="state.role==='teacher'?2:1" class="mr10"><el-icon><Bell /></el-icon></el-badge>
+          <div class="user">
+            <el-avatar :size="28" style="background:var(--el-color-primary)">{{ state.role==='teacher'?'李':'张' }}</el-avatar>
+            {{ state.role === 'teacher' ? '李建国 · 智能制造学院' : '张文博 · 智能制造 2301 班' }}
+          </div>
+        </div>
+      </header>
+
+      <main class="layout-content">
+        <!-- ============ 教师 · 概览 ============ -->
+        <div class="layout-pd" v-show="state.page === 't-overview'">
+          <div class="page-head">
+            <h2>作业诚信概览</h2>
+            <p>本学期《智能制造技术导论》《机械制图》两门课程作业检测汇总。所有检测均在本校本地模型完成，作业原文不出校园。</p>
+          </div>
+          <el-row :gutter="15" class="mb15">
+            <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6" class="mb15" v-for="(v,k) in overviewCards" :key="k">
+              <div class="home-card-item flex">
+                <div class="flex-margin flex w100">
+                  <div class="flex-auto">
+                    <div class="home-card-title">{{ v.title }}</div>
+                    <div class="mt10">
+                      <span class="home-card-num">{{ v.num }}</span>
+                      <span class="ml5 font16" :style="{color:v.tone}">{{ v.sub }}</span>
+                    </div>
+                    <div class="mt10 font13 color-info">{{ v.desc }}</div>
+                  </div>
+                  <div class="home-card-item-icon" :style="{background:v.bg}">
+                    <el-icon :style="{color:v.tone}"><component :is="v.icon" /></el-icon>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row :gutter="15" class="mb15">
+            <el-col :xs="24" :sm="14" :md="14" :lg="16" :xl="16">
+              <el-card shadow="hover"><div ref="lineRef" style="height:320px"></div></el-card>
+            </el-col>
+            <el-col :xs="24" :sm="10" :md="10" :lg="8" :xl="8">
+              <el-card shadow="hover"><div ref="pieRef" style="height:320px"></div></el-card>
+            </el-col>
+          </el-row>
+          <el-card shadow="hover">
+            <template #header><span style="font-weight:600">近期检测记录</span></template>
+            <el-table :data="recent" style="width:100%">
+              <el-table-column type="index" label="序号" width="60" />
+              <el-table-column prop="t" label="作业" show-overflow-tooltip min-width="240" />
+              <el-table-column prop="s" label="提交人" width="150" show-overflow-tooltip />
+              <el-table-column label="AI 疑似度" width="200">
+                <template #default="scope">
+                  <el-progress :percentage="Math.round(scope.row.v*100)"
+                    :color="band(scope.row.v).color" :stroke-width="8" />
+                </template>
+              </el-table-column>
+              <el-table-column label="判定" width="90">
+                <template #default="scope"><el-tag :type="band(scope.row.v).tag">{{ band(scope.row.v).label }}</el-tag></template>
+              </el-table-column>
+              <el-table-column prop="at" label="检测时间" width="140" />
+            </el-table>
+          </el-card>
+          <div class="note-box"><b>关于判定口径：</b>本工具不直接给出"是否作弊"的结论，只输出疑似度与可追溯的特征证据，供教师人工判断。当前数据为演示示例。</div>
+        </div>
+
+        <!-- ============ 学生 · 我的作业 ============ -->
+        <div class="layout-pd" v-show="state.page === 's-home'">
+          <div class="page-head">
+            <h2>我的作业</h2>
+            <p>本学期作业提交与检测情况。所有分析均在本校本地模型完成，你的作业原文不会离开校园。</p>
+          </div>
+          <el-row :gutter="15" class="mb15">
+            <el-col :xs="12" :sm="6" :md="6" :lg="6" :xl="6" v-for="(v,k) in studentStats" :key="k">
+              <el-card shadow="hover"><el-statistic :title="v.title" :value="v.num"><template #suffix><span class="font13 color-info">{{ v.unit }}</span></template></el-statistic></el-card>
+            </el-col>
+          </el-row>
+          <el-card shadow="hover">
+            <template #header><span style="font-weight:600">作业列表</span><span class="tip">2026-2027 学年第一学期</span></template>
+            <el-table :data="myWork" style="width:100%">
+              <el-table-column type="index" label="序号" width="60" />
+              <el-table-column prop="t" label="作业名称" min-width="240" show-overflow-tooltip />
+              <el-table-column prop="c" label="课程" width="160" />
+              <el-table-column label="AI 疑似度" width="180">
+                <template #default="scope">
+                  <span v-if="scope.row.v===null"><el-icon class="is-loading"><Loading /></el-icon> <span class="color-info font13">检测中…</span></span>
+                  <el-progress v-else :percentage="Math.round(scope.row.v*100)" :color="band(scope.row.v).color" :stroke-width="8" />
+                </template>
+              </el-table-column>
+              <el-table-column label="状态" width="100">
+                <template #default="scope">
+                  <el-tag v-if="scope.row.v===null" type="info">分析中</el-tag>
+                  <el-tag v-else :type="band(scope.row.v).tag">{{ band(scope.row.v).label }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="120" fixed="right">
+                <template #default="scope">
+                  <el-button size="small" text type="primary" :disabled="scope.row.v===null" @click="go('s-report')">查看报告</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+          <div class="note-box"><b>关于检测结果：</b>本工具只输出疑似度与可追溯的特征证据，<b>不直接认定作弊</b>。若对结果有异议，可在收到结果后 5 个工作日内发起申诉复核。</div>
+        </div>
+
+        <!-- ============ 提交作业（学生/教师共用） ============ -->
+        <div class="layout-pd" v-show="state.page==='s-upload' || state.page==='t-upload'">
+          <div class="page-head">
+            <h2>作业检测</h2>
+            <p>上传后自动完成「困惑度 / 改写痕迹 / 行文轨迹」三维特征分析，生成带证据的可解释报告。本地模型处理，文本不外传。</p>
+          </div>
+          <el-card shadow="hover" class="mb15">
+            <el-upload drag action="#" :auto-upload="false" :show-file-list="false" :on-change="onFile" accept=".docx,.txt" multiple>
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">把作业文件拖到这里，或 <em>点击上传</em></div>
+              <template #tip><div class="el-upload__tip">支持 .docx / .txt，单文件上限 20MB{{ state.role==='teacher' ? '，支持批量' : '' }}</div></template>
+            </el-upload>
+          </el-card>
+          <el-card shadow="hover">
+            <template #header><span style="font-weight:600">检测队列</span><span class="tip">{{ queue.length }} 项</span></template>
+            <el-table :data="queue" style="width:100%">
+              <el-table-column label="文件" width="200">
+                <template #default="scope"><el-icon class="mr5"><Document /></el-icon>{{ scope.row.name }}</template>
+              </el-table-column>
+              <el-table-column prop="who" label="提交人" width="180" />
+              <el-table-column label="进度" min-width="260">
+                <template #default="scope">
+                  <div v-if="scope.row.step <= steps.length" class="flex" style="align-items:center;gap:10px">
+                    <el-icon class="is-loading"><Loading /></el-icon><span class="color-info font13">{{ steps[scope.row.step-1] }}</span>
+                  </div>
+                  <span v-else><el-tag type="warning">存疑 78%</el-tag>
+                    <el-button size="small" text type="primary" @click="go(state.role==='teacher'?'t-report':'s-report')">查看报告</el-button></span>
+                </template>
+              </el-table-column>
+              <el-table-column label="状态" width="110">
+                <template #default="scope">
+                  <el-tag v-if="scope.row.step<=steps.length" type="info">分析中</el-tag>
+                  <el-tag v-else type="warning">已完成</el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-empty v-if="!queue.length" description="队列为空，上传文件后在此查看检测进度" />
+          </el-card>
+          <div class="note-box"><b>队列说明：</b>本地模型顺序处理，不与外部服务通信。演示中点击上方区域即可模拟一次检测流程。</div>
+        </div>
+
+        <!-- ============ 检测报告（学生/教师共用） ============ -->
+        <div class="layout-pd" v-show="state.page==='s-report' || state.page==='t-report'">
+          <div class="page-head">
+            <h2>检测报告</h2>
+            <p>报告由本地模型基于多特征分析生成。点击正文中带底色的语句，右侧显示该处判定依据与置信度。</p>
+          </div>
+          <el-card shadow="hover" class="mb15">
+            <el-row :gutter="20">
+              <el-col :xs="24" :sm="16" :md="16" :lg="17" :xl="17">
+                <div class="flex mb10" style="align-items:center;gap:8px">
+                  <el-tag type="primary">期中作业</el-tag><el-tag type="info">检测引擎 v0.1</el-tag>
+                </div>
+                <h2 style="margin:0 0 12px;font-size:20px">{{ report.title }}</h2>
+                <el-descriptions :column="2" size="small">
+                  <el-descriptions-item label="提交人">{{ report.student }}</el-descriptions-item>
+                  <el-descriptions-item label="班级">{{ report.className }}</el-descriptions-item>
+                  <el-descriptions-item label="课程">{{ report.course }}</el-descriptions-item>
+                  <el-descriptions-item label="提交时间">{{ report.submitted }}</el-descriptions-item>
+                </el-descriptions>
+                <div class="mt15 flex" style="align-items:center;gap:12px">
+                  <span class="color-info font13">综合判定：</span>
+                  <el-tag :type="band(report.score).tag" size="large">{{ band(report.score).label }}</el-tag>
+                  <span class="font13 color-info">{{ band(report.score).text }}</span>
+                </div>
+              </el-col>
+              <el-col :xs="24" :sm="8" :md="8" :lg="7" :xl="7">
+                <div class="text-center">
+                  <el-progress type="dashboard" :percentage="Math.round(report.score*100)" :color="band(report.score).color" :width="150">
+                    <template #default><div class="font30" style="font-weight:600">{{ Math.round(report.score*100) }}%</div><div class="font13 color-info">AI 生成疑似度</div></template>
+                  </el-progress>
+                  <div class="font12 color-info mt5">判定阈值：存疑 {{ th.warn }}% · 高危 {{ th.high }}%</div>
+                </div>
+              </el-col>
+            </el-row>
+          </el-card>
+
+          <el-row :gutter="15">
+            <el-col :xs="24" :sm="14" :md="14" :lg="15" :xl="15">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">正文与证据定位</span><span class="tip">逐段分析</span></template>
+                <div class="doc">
+                  <template v-for="(p,pi) in report.paras" :key="pi">
+                    <div class="para-meta">
+                      第 {{ pi+1 }} 段
+                      <el-progress :percentage="Math.round(p.score*100)" :color="band(p.score).color" :stroke-width="4" :show-text="false" style="width:80px" />
+                      <span>{{ Math.round(p.score*100) }}%</span>
+                    </div>
+                    <p :class="band(p.score).paraClass">
+                      <template v-for="(seg,si) in p.segs" :key="si">
+                        <span v-if="seg.hl!==undefined" class="hl" :class="[seg.type==='warn'?'warn':'', {on: state.activeEv && state.activeEv.pi===pi && state.activeEv.hi===seg.hl}]"
+                              @click="showEv(pi, seg.hl)">{{ seg.t }}</span>
+                        <span v-else>{{ seg.t }}</span>
+                      </template>
+                    </p>
+                  </template>
+                </div>
+              </el-card>
+            </el-col>
+            <el-col :xs="24" :sm="10" :md="10" :lg="9" :xl="9">
+              <el-card shadow="hover" class="mb15">
+                <template #header><span style="font-weight:600">特征维度</span><span class="tip">3 项</span></template>
+                <div v-for="d in report.dims" :key="d.name" class="mb15">
+                  <div class="flex" style="justify-content:space-between;align-items:center">
+                    <span style="font-weight:500">{{ d.name }}</span>
+                    <span class="font13" :style="{color: band(d.value).color}">{{ Math.round(d.value*100) }}%</span>
+                  </div>
+                  <el-progress :percentage="Math.round(d.value*100)" :color="band(d.value).color" :show-text="false" :stroke-width="6" class="mt5" />
+                  <div class="font12 color-info mt5">{{ d.desc }}</div>
+                </div>
+              </el-card>
+              <el-card shadow="hover" class="mb15">
+                <template #header><span style="font-weight:600">判定依据</span></template>
+                <div v-if="state.activeEv" class="ev-card" :class="{warn: state.activeEv.type==='warn'}">
+                  <div class="ev-h"><el-icon><WarningFilled /></el-icon>{{ typeName(state.activeEv.type) }}</div>
+                  <div class="ev-q">{{ state.activeEv.t }}</div>
+                  <div class="ev-k">判定依据</div>
+                  <div class="ev-t">{{ state.activeEv.r }}</div>
+                  <el-divider style="margin:10px 0" />
+                  <div class="flex font12 color-info" style="justify-content:space-between"><span>置信度</span><span>{{ Math.round(state.activeEv.c*100) }}% · 本地模型</span></div>
+                </div>
+                <el-empty v-else description="点击左侧带底色的语句，查看判定依据" :image-size="70" />
+              </el-card>
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">处理建议</span></template>
+                <p class="font13 color-info" style="line-height:1.8;margin:0">该报告仅作教学参考，<b>不构成作弊认定</b>。建议就写作过程进行沟通后再作判断。</p>
+                <div class="mt15">
+                  <el-button type="primary" @click="state.appealVisible = true"><el-icon class="mr5"><Plus /></el-icon>发起申诉复核</el-button>
+                  <el-button>判为无误</el-button>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
+
+        <!-- ============ 申诉复核（教师） ============ -->
+        <div class="layout-pd" v-show="state.page === 't-appeal'">
+          <div class="page-head"><h2>申诉复核</h2><p>学生可在收到检测结果后 5 个工作日内提交申诉，教师与教学督导共同复核，全程留痕。</p></div>
+          <el-row :gutter="15">
+            <el-col :xs="24" :sm="14" :md="14" :lg="15" :xl="15">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">申诉工单</span><span class="tip">2 件</span></template>
+                <el-table :data="appeals" style="width:100%">
+                  <el-table-column prop="t" label="学生 / 作业" min-width="260" show-overflow-tooltip />
+                  <el-table-column prop="r" label="申诉理由" min-width="180" show-overflow-tooltip />
+                  <el-table-column label="状态" width="100">
+                    <template #default="scope"><el-tag :type="scope.row.tag">{{ scope.row.st }}</el-tag></template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="100" fixed="right">
+                    <template #default="scope"><el-button size="small" text type="primary" @click="ElMessage.info('演示：打开复核')">复核</el-button></template>
+                  </el-table-column>
+                </el-table>
+              </el-card>
+            </el-col>
+            <el-col :xs="24" :sm="10" :md="10" :lg="9" :xl="9">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">复核流程</span><span class="tip">工单 #AP-2026-014</span></template>
+                <el-timeline>
+                  <el-timeline-item type="success" :timestamp="'2026-10-09 22:14'" placement="top">系统出具检测报告 · 疑似度 78%</el-timeline-item>
+                  <el-timeline-item type="success" :timestamp="'2026-10-10 09:31'" placement="top">学生提交申诉材料 · 附写作草稿与参考文献</el-timeline-item>
+                  <el-timeline-item type="primary" :timestamp="'进行中'" placement="top">教师初步复核 · 已指派 李建国</el-timeline-item>
+                  <el-timeline-item :timestamp="'待处理'" placement="top">教学督导联合认定</el-timeline-item>
+                  <el-timeline-item :timestamp="'待处理'" placement="top">结果归档并通知学生</el-timeline-item>
+                </el-timeline>
+              </el-card>
+            </el-col>
+          </el-row>
+          <div class="note-box"><b>为什么必须有申诉环节：</b>AI 检测无法做到 100% 准确。工具只做"机器初筛"，最终认定权留给教师与督导。</div>
+        </div>
+
+        <!-- ============ 我的申诉（学生） ============ -->
+        <div class="layout-pd" v-show="state.page === 's-appeal'">
+          <div class="page-head"><h2>我的申诉</h2><p>若认为检测结果有误，可提交申诉材料，由任课教师与教学督导共同复核。</p></div>
+          <el-row :gutter="15">
+            <el-col :xs="24" :sm="14" :md="14" :lg="15" :xl="15">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">我的申诉工单</span><span class="tip">1 件</span></template>
+                <el-table :data="myAppeals" style="width:100%">
+                  <el-table-column prop="t" label="作业" min-width="240" show-overflow-tooltip />
+                  <el-table-column prop="r" label="理由" min-width="180" show-overflow-tooltip />
+                  <el-table-column label="状态" width="100">
+                    <template #default="scope"><el-tag :type="scope.row.tag">{{ scope.row.st }}</el-tag></template>
+                  </el-table-column>
+                </el-table>
+              </el-card>
+            </el-col>
+            <el-col :xs="24" :sm="10" :md="10" :lg="9" :xl="9">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">复核进度</span></template>
+                <el-timeline>
+                  <el-timeline-item type="success" timestamp="2026-10-09 22:14" placement="top">系统出具检测报告 · 疑似度 78%</el-timeline-item>
+                  <el-timeline-item type="success" timestamp="2026-10-10 09:31" placement="top">你提交申诉材料</el-timeline-item>
+                  <el-timeline-item type="primary" timestamp="进行中" placement="top">教师初步复核 · 已指派 李建国</el-timeline-item>
+                  <el-timeline-item timestamp="待处理" placement="top">教学督导联合认定</el-timeline-item>
+                  <el-timeline-item timestamp="待处理" placement="top">结果归档并通知</el-timeline-item>
+                </el-timeline>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
+
+        <!-- ============ 模型与阈值（教师） ============ -->
+        <div class="layout-pd" v-show="state.page === 't-settings'">
+          <div class="page-head"><h2>模型与阈值</h2><p>判定阈值支持回看与调整，调整记录、生效时间、操作人全部留痕，便于学期末复盘检测口径。</p></div>
+          <el-row :gutter="15">
+            <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">当前生效配置</span></template>
+                <el-descriptions :column="1" size="small" border>
+                  <el-descriptions-item label="本地检测模型"><el-tag type="success">运行中</el-tag> 私有化部署，文本不外传</el-descriptions-item>
+                  <el-descriptions-item label="特征维度"><el-tag type="primary">3 项</el-tag> 困惑度 · 改写痕迹 · 行文轨迹</el-descriptions-item>
+                  <el-descriptions-item label="存疑阈值">
+                    <el-slider v-model="th.warn" :min="40" :max="90" style="max-width:220px" /><span class="ml10 color-primary" style="font-weight:600">{{ th.warn }}%</span>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="高危阈值">
+                    <el-slider v-model="th.high" :min="60" :max="98" style="max-width:220px" /><span class="ml10" style="font-weight:600;color:var(--el-color-danger)">{{ th.high }}%</span>
+                  </el-descriptions-item>
+                </el-descriptions>
+              </el-card>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+              <el-card shadow="hover">
+                <template #header><span style="font-weight:600">调整记录</span><span class="tip">近 3 条</span></template>
+                <el-table :data="thLogs" style="width:100%">
+                  <el-table-column prop="t" label="变更" min-width="200" />
+                  <el-table-column prop="u" label="操作人 / 时间" width="180" />
+                  <el-table-column label="状态" width="90"><template #default><el-tag type="info">已生效</el-tag></template></el-table-column>
+                </el-table>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
+      </main>
+    </div>
+
+    <!-- 申诉对话框 -->
+    <el-dialog v-model="state.appealVisible" title="发起申诉复核" width="640px" draggable>
+      <el-form :model="state.appealForm" label-width="90px">
+        <el-form-item label="关联作业"><el-input v-model="state.appealForm.title" readonly /></el-form-item>
+        <el-form-item label="申诉理由">
+          <el-input v-model="state.appealForm.reason" type="textarea" :rows="5" maxlength="300" show-word-limit
+                    placeholder="请说明写作过程、资料来源，可附草稿、参考文献、写作时间线等佐证材料…" />
+        </el-form-item>
+        <el-form-item label="佐证材料">
+          <el-upload action="#" :auto-upload="false" :show-file-list="false"><el-button><el-icon class="mr5"><Upload /></el-icon>上传草稿 / 参考文献</el-button></el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="state.appealVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmitAppeal">提交申诉</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</div>
+</script>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue/dist/index.iife.min.js"></script>
+<script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+<script>
+const { createApp, reactive, ref, computed, nextTick, onMounted, watch } = Vue;
+const { ElMessage } = ElementPlus;
+
+const app = createApp({
+  template: '#app-template',
+  setup(){
+    /* ---------------- 状态（对齐 skill：const state = reactive({...})） ---------------- */
+    const state = reactive({
+      login: false,
+      role: 'teacher',            // teacher | student
+      page: 't-overview',
+      collapse: false,
+      isDark: false,
+      engine: { busy: false },
+      activeEv: null,
+      appealVisible: false,
+      loginForm: { sid: '20230412', pwd: '123456' },
+      appealForm: { title: '人工智能在智能制造中的应用与思考', reason: '' },
+    });
+    const th = reactive({ warn: 60, high: 85 });
+
+    /* ---------------- 菜单 ---------------- */
+    const teacherMenus = [
+      { title: '教学管理', items: [
+        { key:'t-overview', name:'概览',      icon:'HomeFilled' },
+        { key:'t-upload',   name:'作业检测',  icon:'UploadFilled' },
+        { key:'t-report',   name:'检测报告',  icon:'Document' },
+      ]},
+      { title: '诚信流程', items: [
+        { key:'t-appeal',   name:'申诉复核',  icon:'ChatDotSquare', badge:2 },
+        { key:'t-settings', name:'模型与阈值', icon:'Setting' },
+      ]},
+    ];
+    const studentMenus = [
+      { title: '我的学习', items: [
+        { key:'s-home',    name:'我的作业',    icon:'HomeFilled' },
+        { key:'s-upload',  name:'提交作业',    icon:'UploadFilled' },
+        { key:'s-report',  name:'我的检测报告', icon:'Document' },
+      ]},
+      { title: '诚信流程', items: [
+        { key:'s-appeal',  name:'我的申诉',    icon:'ChatDotSquare', badge:1 },
+      ]},
+    ];
+    const menus = computed(()=> state.role === 'teacher' ? teacherMenus : studentMenus);
+    const PAGE_NAMES = {
+      't-overview':'概览','t-upload':'作业检测','t-report':'检测报告','t-appeal':'申诉复核','t-settings':'模型与阈值',
+      's-home':'我的作业','s-upload':'提交作业','s-report':'我的检测报告','s-appeal':'我的申诉',
+    };
+    const pageName = computed(()=> PAGE_NAMES[state.page] || '');
+
+    /* ---------------- 阈值分档 ---------------- */
+    const band = (v) => {
+      const p = v * 100;
+      if (p >= th.high) return { label:'高危', tag:'danger',  color:'#f56c6c', text:'高度疑似 AI 生成', paraClass:'flag' };
+      if (p >= th.warn) return { label:'存疑', tag:'warning', color:'#e6a23c', text:'存在 AI 生成可能，建议人工复核', paraClass:'warn' };
+      return { label:'可信', tag:'success', color:'#67c23a', text:'未发现明显 AI 生成特征', paraClass:'' };
+    };
+    const typeName = (t) => ({ai:'疑似生成',rewrite:'改写痕迹',trace:'行文轨迹',warn:'轻度存疑'}[t] || '特征命中');
+
+    /* ---------------- 概览数据 ---------------- */
+    const overviewCards = [
+      { title:'本学期已检测作业', num:'1,284', sub:'', desc:'覆盖 2 门课程 · 4 个班级', icon:'Document', bg:'var(--next-color-primary-lighter)', tone:'var(--el-color-primary)' },
+      { title:'疑似 AI 生成',     num:'96',    sub:'7.5%', desc:'较上月 +1.2%', icon:'Warning', bg:'var(--next-color-danger-lighter)', tone:'var(--el-color-danger)' },
+      { title:'复核后确认',       num:'41',    sub:'', desc:'误判率 57.3%，均已驳回', icon:'CircleCheck', bg:'var(--next-color-success-lighter)', tone:'var(--el-color-success)' },
+      { title:'申诉工单',         num:'2',     sub:'', desc:'1 件复核中 · 1 件已结案', icon:'ChatDotSquare', bg:'var(--next-color-warning-lighter)', tone:'var(--el-color-warning)' },
+    ];
+    const studentStats = [
+      { title:'已提交作业', num:4, unit:'份' },
+      { title:'已完成检测', num:3, unit:'份' },
+      { title:'需关注',     num:1, unit:'份' },
+      { title:'申诉记录',   num:1, unit:'件' },
+    ];
+    const recent = [
+      { t:'人工智能在智能制造中的应用与思考', s:'张文博 · 2301班', v:.78, at:'10-09 22:14' },
+      { t:'基于PLC的自动分拣系统设计',        s:'陈思远 · 2302班', v:.22, at:'10-09 20:41' },
+      { t:'机械制图大作业 · 减速器装配图',    s:'刘一鸣 · 2301班', v:.41, at:'10-09 18:06' },
+      { t:'《智能制造导论》读书报告',          s:'王雪 · 2303班',   v:.93, at:'10-08 23:52' },
+      { t:'数控加工工艺路线设计说明',          s:'赵天宇 · 2302班', v:.35, at:'10-08 21:17' },
+      { t:'工业机器人示教编程实验报告',        s:'孙悦 · 2303班',   v:.67, at:'10-08 19:44' },
+    ];
+    const myWork = [
+      { t:'人工智能在智能制造中的应用与思考', c:'智能制造技术导论', v:.78 },
+      { t:'机械制图大作业 · 减速器装配图',    c:'机械制图',         v:.41 },
+      { t:'数控加工工艺路线设计说明',          c:'智能制造技术导论', v:null },
+      { t:'《智能制造技术导论》读书报告',      c:'智能制造技术导论', v:.22 },
+    ];
+    const appeals   = [
+      { t:'张文博 · 人工智能在智能制造中的应用与思考', r:'附写作草稿与参考文献', st:'复核中', tag:'warning' },
+      { t:'王雪 · 《智能制造导论》读书报告',           r:'说明由AI辅助整理提纲',  st:'已结案', tag:'success' },
+    ];
+    const myAppeals = [
+      { t:'人工智能在智能制造中的应用与思考', r:'附写作草稿与参考文献', st:'复核中', tag:'warning' },
+    ];
+    const thLogs = [
+      { t:'存疑阈值 65% → 60%',  u:'李建国 · 2026-09-28' },
+      { t:'新增"行文轨迹"特征',  u:'系统 · 2026-09-15' },
+      { t:'高危阈值 90% → 85%',  u:'教学督导组 · 2026-09-02' },
+    ];
+
+    /* ---------------- 报告数据 ---------------- */
+    const report = {
+      title:'人工智能在智能制造中的应用与思考',
+      student:'张文博 · 20230412', className:'智能制造 2301 班',
+      course:'智能制造技术导论', submitted:'2026-10-09 22:14', score:0.78,
+      dims:[
+        { name:'文本困惑度', value:0.81, desc:'用词可预测性偏高，长句衔接缺少意外性' },
+        { name:'改写痕迹',   value:0.66, desc:'检出同义替换与句式重构，疑似经二次润色' },
+        { name:'行文轨迹',   value:0.74, desc:'段落推进过于平滑，缺少个人经验与试错痕迹' },
+      ],
+      paras:[
+        { score:0.18, segs:[{ t:'这学期上完《智能制造技术导论》，老师带我们去参观了江宁一家做汽车零部件的厂。说实话去之前我以为所谓智能工厂就是机器人多，去了才发现真正让我印象深的，是车间主任说的那句话——现在最贵的不是设备，是既懂工艺又会看数据的人。' }] },
+        { score:0.92, segs:[
+          { t:'人工智能技术' },
+          { hl:0, type:'trace', t:'作为新一轮科技革命的核心驱动力', c:0.88, r:'该表述为高预训练语料中的高频套语，搭配高度固定，模型续写概率远高于普通学术写作。' },
+          { t:'，正在' },
+          { hl:1, type:'rewrite', t:'深刻重塑制造业的生产方式、组织形态与价值链条', c:0.91, r:'三元并列结构密集且长度高度对称，是典型生成式改写特征；人工写作中三者通常长短不一。' },
+          { t:'。从智能排产到质量预测，从设备健康管理到供应链协同，应用场景不断拓展，为制造业转型升级' },
+          { hl:2, type:'ai', t:'注入了强劲动能', c:0.93, r:'动宾搭配模板化，整段无任何具体案例、数据或来源，符合模型"安全综述式"输出习惯。' },
+          { t:'。' },
+        ]},
+        { score:0.55, segs:[
+          { t:'在质量检测环节，' },
+          { hl:0, type:'warn', t:'基于机器视觉的缺陷识别已经比较成熟', c:0.62, r:'该句为通用行业概述，缺少出处；但紧随其后的具体厂房经验带有人工观察特征，故整体判为中等疑似。' },
+          { t:'。厂里原来的质检线每条要三个人盯着，现在留一个人复核就行。不过也不是没有问题，光照一变模型就误判，他们后来专门搭了个暗室把光照固定下来才稳定。' },
+        ]},
+        { score:0.87, segs:[
+          { t:'此外，人工智能在预测性维护、能耗优化、柔性生产等多个维度' },
+          { hl:0, type:'warn', t:'展现出显著优势', c:0.74, r:'评价性动词+形容词的空泛组合，不含可核验信息。' },
+          { t:'。通过构建数据驱动的闭环体系，企业能够实现' },
+          { hl:1, type:'rewrite', t:'降本增效、提质增能', c:0.86, r:'四字口号式并列，两短语语义高度重叠，人工写作中较少同时使用。' },
+          { t:'的战略目标，推动制造业向' },
+          { hl:2, type:'ai', t:'高端化、智能化、绿色化方向持续迈进', c:0.9, r:'"三化"模板结尾在语料中极为常见，且与本段前文无逻辑承接。' },
+          { t:'。' },
+        ]},
+        { score:0.30, segs:[{ t:'回到我自己，现在能做的可能就是先把 Python 和几门专业课学扎实。这次参观给我最大的触动，是发现课本上讲的"智能制造"，其实是一堆很具体的麻烦事堆起来的。' }] },
+      ],
+    };
+    const showEv = (pi, hi) => { const h = report.paras[pi].segs.find(s=>s.hl===hi); state.activeEv = { ...h, pi, hi }; };
+
+    /* ---------------- 队列 ---------------- */
+    const steps = ['提取文本…','困惑度分析…','改写痕迹比对…','行文轨迹分析…'];
+    const queue = reactive([]);
+    let qn = 0;
+    const FILES = [['期中作业.docx','张文博 · 2301班'],['读书报告.docx','王雪 · 2303班'],['实验报告.docx','孙悦 · 2303班']];
+    const startDetect = (name, who) => {
+      const row = reactive({ name, who, step: 1 });
+      queue.unshift(row);
+      state.engine.busy = true;
+      const iv = setInterval(()=>{
+        row.step++;
+        if (row.step > steps.length){
+          clearInterval(iv);
+          state.engine.busy = false;
+          go(state.role==='teacher' ? 't-report' : 's-report');
+        }
+      }, 700);
+    };
+    const onFile = () => { const [n,w] = FILES[qn++ % FILES.length]; startDetect(n,w); };
+
+    /* ---------------- 导航 / 角色 ---------------- */
+    const go = (key) => { state.page = key; state.activeEv = null; };
+    const onLogin = () => { state.login = true; state.role = 'student'; state.page = 's-home'; };
+    const onEnterTeacher = () => { state.login = true; state.role = 'teacher'; state.page = 't-overview'; };
+    const switchRole = () => {
+      state.role = state.role === 'teacher' ? 'student' : 'teacher';
+      state.page = state.role === 'teacher' ? 't-overview' : 's-home';
+    };
+    const onToggleDark = (v) => { document.documentElement.setAttribute('data-theme', v ? 'dark' : 'light'); };
+    const onSubmitAppeal = () => {
+      if(!state.appealForm.reason){ ElMessage.warning('请填写申诉理由'); return; }
+      state.appealVisible = false;
+      ElMessage.success('申诉已提交，请等待复核');
+      if(state.role==='student') go('s-appeal');
+    };
+
+    /* ---------------- ECharts（深浅色联动，对齐 skill） ---------------- */
+    const lineRef = ref(), pieRef = ref();
+    let lineChart = null, pieChart = null;
+    const initCharts = () => {
+      if(!lineRef.value) return;
+      const dark = state.isDark;
+      const axis = dark ? '#9b9da1' : '#909399';
+      const split = dark ? '#333' : '#f1f2f3';
+      if(lineChart) lineChart.dispose();
+      if(pieChart) pieChart.dispose();
+      lineChart = echarts.init(lineRef.value);
+      lineChart.setOption({
+        tooltip:{ trigger:'axis' },
+        legend:{ right:10, top:0, textStyle:{ color: axis } },
+        grid:{ top:44, right:20, bottom:30, left:50 },
+        xAxis:{ type:'category', boundaryGap:false, data:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                axisLine:{ lineStyle:{ color: split } }, axisLabel:{ color: axis } },
+        yAxis:{ type:'value', splitLine:{ lineStyle:{ color: split } }, axisLabel:{ color: axis } },
+        series:[
+          { name:'AI 疑似样本', type:'line', smooth:true, symbol:'circle', data:[8,12,6,18,15,15,14,10,7,17,26,38],
+            lineStyle:{ color:'#409eff' }, itemStyle:{ color:'#409eff' },
+            areaStyle:{ color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(64,158,255,.35)'},{offset:1,color:'rgba(64,158,255,0)'}]) } },
+          { name:'教师复核确认', type:'line', smooth:true, symbol:'circle', data:[3,4,2,6,5,5,5,4,3,6,9,13],
+            lineStyle:{ color:'#e6a23c' }, itemStyle:{ color:'#e6a23c' },
+            areaStyle:{ color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(230,162,60,.28)'},{offset:1,color:'rgba(230,162,60,0)'}]) } },
+        ],
+      });
+      pieChart = echarts.init(pieRef.value);
+      pieChart.setOption({
+        tooltip:{ trigger:'item' },
+        legend:{ bottom:0, textStyle:{ color: axis } },
+        series:[{
+          type:'pie', radius:['46%','68%'], center:['50%','45%'],
+          avoidLabelOverlap:true, itemStyle:{ borderRadius:6, borderColor: dark?'#191919':'#fff', borderWidth:2 },
+          label:{ show:false }, labelLine:{ show:false },
+          data:[
+            { value:1188, name:'可信 (0–60%)' },
+            { value:68,   name:'存疑 (60–85%)' },
+            { value:28,   name:'高危 (85%+)' },
+          ],
+        }],
+      });
+    };
+    onMounted(()=> nextTick(initCharts));
+    watch(()=>[state.page, state.isDark], ()=> nextTick(()=>{ if(lineRef.value) initCharts(); }));
+    window.addEventListener('resize', ()=>{ lineChart && lineChart.resize(); pieChart && pieChart.resize(); });
+
+    return { state, th, menus, pageName, band, typeName, overviewCards, studentStats, recent, myWork, appeals, myAppeals, thLogs,
+             report, showEv, steps, queue, onFile, go, onLogin, onEnterTeacher, switchRole, onToggleDark, onSubmitAppeal,
+             lineRef, pieRef, ElMessage };
+  },
+});
+
+/* 注册 Element Plus 图标（对齐 skill 的 ele- 前缀约定） */
+for (const [key, comp] of Object.entries(ElementPlusIconsVue)) {
+  app.component('ele-' + key, comp);
+  app.component(key, comp);
+}
+app.use(ElementPlus);
+app.mount('#app');
+</script>
+</body>
+</html>

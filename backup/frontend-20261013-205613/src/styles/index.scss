@@ -1,0 +1,86 @@
+/* ============================================================
+   设计令牌 —— 对齐 vue-next-admin / 「智学云」后台模板
+   ============================================================ */
+:root {
+  --next-color-white: #ffffff;
+  --next-bg-main-color: #f8f8f8;
+  --next-bg-color: #f5f5ff;
+  --next-border-color-light: #f1f2f3;
+  --next-color-primary-lighter: #ecf5ff;
+  --next-bg-menuBar: #2f343a;
+  --next-bg-menuBarColor: #bfc5ce;
+  --next-bg-menuBarActiveColor: rgba(255, 255, 255, 0.1);
+  --next-bg-menuBarTitle: #ffffff;
+
+  /* 柔化：圆角与投影（对齐 themeConfig.pageRadius 可配机制） */
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --r-card: 16px;
+  --r-block: 12px;
+  --sh-soft: 0 2px 12px rgba(0, 21, 41, 0.05);
+  --sh-lift: 0 8px 26px rgba(0, 21, 41, 0.09);
+  --el-color-primary: #409eff;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  background: var(--next-bg-main-color);
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 3px; }
+
+/* ---------- 全局工具类（对齐 references/utility-classes.md） ---------- */
+.layout-pd { padding: 15px; }
+.layout-padding { padding: 15px; }
+.flex { display: flex; }
+.flex-auto { flex: 1; }
+.flex-margin { margin: auto; }
+.cursor-pointer { cursor: pointer; }
+.w100 { width: 100%; }
+.h100 { height: 100%; }
+.text-center { text-align: center; }
+.mt5 { margin-top: 5px; } .mt10 { margin-top: 10px; } .mt15 { margin-top: 15px; } .mt20 { margin-top: 20px; }
+.mb5 { margin-bottom: 5px; } .mb10 { margin-bottom: 10px; } .mb15 { margin-bottom: 15px; } .mb20 { margin-bottom: 20px; }
+.ml5 { margin-left: 5px; } .ml10 { margin-left: 10px; } .ml15 { margin-left: 15px; }
+.mr5 { margin-right: 5px; } .mr10 { margin-right: 10px; }
+.font12 { font-size: 12px; } .font13 { font-size: 13px; } .font16 { font-size: 16px; }
+.font20 { font-size: 20px; } .font30 { font-size: 30px; }
+.color-primary { color: var(--el-color-primary); }
+.color-info { color: var(--el-text-color-secondary); }
+.color-danger { color: var(--el-color-danger); }
+.color-warning { color: var(--el-color-warning); }
+.color-success { color: var(--el-color-success); }
+
+/* ---------- 卡片柔化（去硬边框，改柔和投影） ---------- */
+.el-card {
+  border: 0 !important;
+  border-radius: var(--r-card) !important;
+  box-shadow: var(--sh-soft) !important;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.el-card.is-hover-shadow:hover { box-shadow: var(--sh-lift) !important; }
+.el-card__header { border-bottom: 1px solid var(--next-border-color-light); padding: 16px 20px; }
+.el-card__body { padding: 20px; }
+.el-table { --el-table-border-color: var(--next-border-color-light); --el-table-header-bg-color: transparent; }
+.el-table th.el-table__cell { background: transparent; font-weight: 500; color: var(--el-text-color-secondary); }
+.el-table::before { display: none; }
+.el-button { border-radius: 9px; }
+.el-input__wrapper, .el-textarea__inner { border-radius: 9px; }
+.el-tag { border-radius: 7px; }
+.el-progress-bar__outer, .el-progress-bar__inner { border-radius: 20px; }
+
+/* ---------- 证据高亮（报告页核心交互） ---------- */
+.ev-hl {
+  background: var(--el-color-danger-light-9);
+  border-bottom: 1px dashed var(--el-color-danger-light-3);
+  padding: 1px 2px; border-radius: 2px; cursor: pointer; transition: all 0.18s ease;
+}
+.ev-hl.warn { background: var(--el-color-warning-light-9); border-bottom-color: var(--el-color-warning-light-3); }
+.ev-hl.on { background: var(--el-color-danger); color: #fff; }
+.ev-hl.warn.on { background: var(--el-color-warning); color: #fff; }
+.raw-text { font-size: 15px; line-height: 2; white-space: pre-wrap; word-break: break-word; }
